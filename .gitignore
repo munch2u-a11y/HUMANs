@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+.venv-rocm/
+env/
+venv/
+ENV/
+
+# Database files
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3
+*.db
+
+# Persistent local minds and authorized user workspaces
+/state/
+/workspace/
+/checkpoints/
+
+# Model and cortex artifacts
+/models/
+*.packet
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+
+# Generated experiment state
+/experiments/graph_native_live/runs/
+/experiments/graph_native_live/*_runs/
+/experiments/graph_native_live/opaque_runs/
+/experiments/graph_native_live/nursery_runs/
+
+# Build & Packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.log
+scratch/
+core
+core.*
