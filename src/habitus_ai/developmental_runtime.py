@@ -96,6 +96,11 @@ class DevelopmentalInput:
     concept_scores: Mapping[str, float] | None = None
     metadata: Mapping[str, Any] | None = None
     motor_eligible: bool = True
+    # A concrete environmental opportunity may make only named candidates
+    # physically available on their motor trunks. SELF still scores and must
+    # authorize those candidates; this prevents stale abilities from replacing
+    # the one that is actually available in the current frame.
+    exclusive_output_node_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -450,6 +455,19 @@ class BornInHabitusRuntime:
         if not inputs and not pending:
             raise ValueError("a developmental pulse requires new or pending input")
         item_ids = [item.item_id for item in pending]
+        exclusive_output_node_ids: set[str] = set()
+        for item in pending:
+            exclusive_nodes = {
+                str(node_id)
+                for node_id in item.metadata.get(
+                    "developmental_exclusive_output_node_ids", ()
+                )
+            }
+            if not exclusive_nodes.issubset(item.concept_scores):
+                raise ValueError(
+                    "pending exclusive output nodes are not sensed concepts"
+                )
+            exclusive_output_node_ids.update(exclusive_nodes)
         heard_payloads = [
             item.content.encode("utf-8") for item in pending if item.lane == InputTrunk.HEAR
         ]
@@ -470,6 +488,14 @@ class BornInHabitusRuntime:
                 str(node_id): float(score)
                 for node_id, score in (item.concept_scores or {}).items()
             }
+            exclusive_nodes = {
+                str(node_id) for node_id in item.exclusive_output_node_ids
+            }
+            if not exclusive_nodes.issubset(recognition_scores):
+                raise ValueError(
+                    "exclusive output nodes must be sensed concept scores"
+                )
+            exclusive_output_node_ids.update(exclusive_nodes)
             for recognized in item_recognitions:
                 recognition_scores[recognized.node_id] = max(
                     recognition_scores.get(recognized.node_id, 0.0),
@@ -491,6 +517,9 @@ class BornInHabitusRuntime:
                     "transcript_window_used": False,
                     "developmental_motor_eligible": bool(
                         item.motor_eligible
+                    ),
+                    "developmental_exclusive_output_node_ids": sorted(
+                        exclusive_nodes
                     ),
                     "developmental_recognized_form_ids": [
                         recognized.form_id
@@ -589,11 +618,33 @@ class BornInHabitusRuntime:
                         (0.16 + 0.22 * recognition + 0.12 * alignment)
                         * novelty,
                     )
-            return self._developmental_output_candidates(
+            candidates = self._developmental_output_candidates(
                 recurrent,
                 pulse_id,
                 cortex_proposal=cortex_proposal,
                 speech_exploration_pressure=speech_exploration_pressure,
+            )
+            if not exclusive_output_node_ids:
+                return candidates
+            constrained = {
+                candidate.node_id: candidate
+                for candidate in candidates
+                if candidate.node_id in exclusive_output_node_ids
+            }
+            missing = exclusive_output_node_ids - set(constrained)
+            if missing:
+                raise ValueError(
+                    "exclusive output nodes are not reachable candidates: "
+                    + ", ".join(sorted(missing))
+                )
+            constrained_trunks = {
+                candidate.trunk for candidate in constrained.values()
+            }
+            return tuple(
+                candidate
+                for candidate in candidates
+                if candidate.trunk not in constrained_trunks
+                or candidate.node_id in exclusive_output_node_ids
             )
 
         def observe_state(connection: Any, frame: PulseCommitFrame) -> Mapping[str, Any]:

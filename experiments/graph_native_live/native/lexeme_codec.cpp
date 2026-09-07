@@ -221,12 +221,16 @@ int main(int argc, char ** argv) {
     const std::string model_path = argv[1];
     const std::string mode = argv[2];
     const char * backend_env = std::getenv("OLLAMA_LIB_DIR");
-    const std::string backend_dir = backend_env ? backend_env : "/usr/local/lib/ollama";
+    const std::string backend_dir = backend_env ? backend_env : "";
 
     try {
         llama_log_set(quiet_log, nullptr);
         BackendGuard backend;
-        ggml_backend_load_all_from_path(backend_dir.c_str());
+        if (backend_dir.empty()) {
+            ggml_backend_load_all();
+        } else {
+            ggml_backend_load_all_from_path(backend_dir.c_str());
+        }
         llama_model_params parameters = llama_model_default_params();
         parameters.n_gpu_layers = 0;
         ModelGuard model{llama_model_load_from_file(model_path.c_str(), parameters)};

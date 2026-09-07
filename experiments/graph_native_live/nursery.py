@@ -12,7 +12,6 @@ import argparse
 from dataclasses import dataclass
 import hashlib
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
@@ -41,6 +40,7 @@ from habitus_ai.types import (  # noqa: E402
     as_tuple,
 )
 from opaque_skeleton import OpaqueIdentityEmbedder, opaque_unit_vector  # noqa: E402
+from runtime_paths import native_environment  # noqa: E402
 
 
 MODEL = PROJECT_ROOT / "models" / "Qwen3-0.6B-Q8_0.gguf"
@@ -66,10 +66,7 @@ class SpeechAttempt:
 
 
 def codec_environment() -> dict[str, str]:
-    environment = os.environ.copy()
-    environment["OLLAMA_LIB_DIR"] = "/usr/local/lib/ollama"
-    environment["LD_LIBRARY_PATH"] = "/usr/local/lib/ollama"
-    return environment
+    return native_environment()
 
 
 def _tokenize_payload(

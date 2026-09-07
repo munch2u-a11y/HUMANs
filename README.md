@@ -17,6 +17,11 @@ selects the explicit `LOOK` recall ability. File actions likewise require an
 exact one-use affordance, produce a receipt, and return through `SEE` or
 `NOTICE` before they can be reported.
 
+This repository ships the complete runnable composition, an offline integrated
+playground, behavioral tests, and the earlier RAG path as a control. It does not
+ship anyone else's memory database, model weights, or trained checkpoint; a
+clean checkout creates a new local lineage owned by its operator.
+
 ## What works now
 
 | Capability | Current implementation |
@@ -28,35 +33,57 @@ exact one-use affordance, produce a receipt, and return through `SEE` or
 | File execution | `/run` executes one named Python file with time, memory, descriptor, and output limits |
 | Inspectability | `/state` and `--json` expose pulse IDs, selected outputs, evidence IDs, receipts, hashes, and graph invariants |
 
-## Run your own mind
+## Five-minute offline start
 
 Requirements:
 
-- Linux or another Unix-like system with Python 3.11+
-- [Ollama](https://ollama.com/) running locally
-- enough RAM for PyTorch, the 18M-parameter cortex, and the selected Ollama model
+- Linux, macOS, or another POSIX system with Python 3.11+
+- enough disk and RAM to install PyTorch
 
 ```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -e '.[cortex]'
-
-ollama pull qwen3.5:0.8b
-mkdir -p state workspace
-.venv/bin/habitus-mind \
-  --database state/mira.sqlite \
-  --workspace workspace \
-  --human-name "Your name" \
-  --agent-name Mira
+git clone https://github.com/munch2u-a11y/HUMANs.git
+cd HUMANs
+make setup
+make playground
+make test
 ```
 
-The names and initial taste are gestated only when a new database is created.
-Reopening that database resumes the same lineage and state.
+The playground runs the integrated conversation, memory, recall, file-read,
+file-run, receipt, and state paths with a tiny cortex and an editable fake
+speech motor. It is disposable, CPU-only, and needs no Ollama service, model
+download, network request, or existing database.
+
+## Run your own persistent mind
+
+Install and start [Ollama](https://ollama.com/), then:
+
+```bash
+ollama pull qwen3.5:0.8b
+make doctor
+make smoke HUMAN_NAME="Your name" AGENT_NAME=Mira
+make run HUMAN_NAME="Your name" AGENT_NAME=Mira
+```
+
+By default this uses `state/habitus.sqlite` and authorizes only `workspace/`.
+Override any location explicitly; no developer-specific home path is assumed:
+
+```bash
+make run \
+  MIND_DATABASE=state/mira.sqlite \
+  WORKSPACE=workspace \
+  HUMAN_NAME="Your name" \
+  AGENT_NAME=Mira
+```
+
+Names and the initial taste are gestated only when a new database is created.
+Reopening that database resumes the same lineage and state. Use another database
+path to create another mind.
 
 CPU is the default for both the cortex and Ollama. Add `--allow-gpu` only when
 you intentionally want both components to use an available GPU. AMD users can
 install the project-specific ROCm environment described in
-[Developmental Cortex](docs/DEVELOPMENTAL_CORTEX.md).
+[Developmental Cortex](docs/DEVELOPMENTAL_CORTEX.md). The standard setup,
+playground, and tests do not enable a GPU.
 
 ### Try the complete loop
 
@@ -87,6 +114,10 @@ receipt:
   --once '/run hello.py' \
   --json
 ```
+
+See [Getting started](docs/GETTING_STARTED.md) for setup variants,
+troubleshooting, a copy-paste prompt for another coding agent, and the smallest
+editable API integration.
 
 ## The execution boundary
 
@@ -120,7 +151,8 @@ Read [Integrated Mind Runtime](docs/INTEGRATED_MIND.md) for the precise memory,
 language, identity, sensing, and tool boundaries. Read the
 [born-in cortex technical brief](docs/HABITUS_BORN_IN_CORTEX_TECHNICAL_BRIEF.md)
 for the developmental design and [Architecture](ARCHITECTURE.md) for the
-underlying conserved graph substrate.
+underlying conserved graph substrate. The complete map is in
+[docs/README.md](docs/README.md).
 
 ## Components
 
@@ -143,11 +175,10 @@ described above.
 
 ## Verification
 
-Install test dependencies and run the complete suite:
+Run every local release check:
 
 ```bash
-.venv/bin/python -m pip install -e '.[test,cortex]'
-.venv/bin/python -m pytest
+make verify
 ```
 
 The tests cover restart continuity, absence of transcript/retrieval injection,
@@ -157,6 +188,10 @@ learning, and controlled nursery experiments. A test pass demonstrates those
 specific behaviors; it does not stand in for a claim of consciousness or
 general intelligence.
 
+The verification target also rejects machine-specific paths, checks local
+documentation links, and runs the disposable integrated playground. See
+[Testing](docs/TESTING.md) for the exact evidence boundary of each check.
+
 ## Security
 
 `/open` resolves the selected file beneath the configured workspace. `/run`
@@ -164,6 +199,12 @@ adds useful process limits, but it is **not a hostile-code sandbox**: Python
 code you authorize can still use the permissions of your local account. Point
 `--workspace` at a directory containing code you trust. See
 [Security Policy](.github/SECURITY.md).
+
+## For coding agents
+
+Read [AGENTS.md](AGENTS.md) before changing the runtime. It identifies the
+authoritative product path, safe first commands, persistent-state rules,
+portability requirements, and the receipts that must back action claims.
 
 ## License
 

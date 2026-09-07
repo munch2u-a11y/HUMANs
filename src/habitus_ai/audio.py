@@ -4,6 +4,7 @@ import os
 import shlex
 import shutil
 import subprocess
+import tempfile
 import time
 import uuid
 import wave
@@ -84,7 +85,12 @@ class AudioReflexBridge:
         start_time = time.perf_counter()
 
         if output_wav is None:
-            output_wav = Path(f"/tmp/habitus_speech_{uuid.uuid4().hex[:8]}.wav")
+            with tempfile.NamedTemporaryFile(
+                prefix="habitus_speech_",
+                suffix=".wav",
+                delete=False,
+            ) as temporary:
+                output_wav = Path(temporary.name)
         else:
             output_wav = Path(output_wav)
 

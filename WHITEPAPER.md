@@ -10,7 +10,11 @@
 > **Historical scope.** This paper describes the conserved memory substrate
 > that preceded Habitus Mind 0.1.0. For the current deployable composition and
 > its open-weight speech boundary, begin with
-> [`docs/INTEGRATED_MIND.md`](docs/INTEGRATED_MIND.md).
+> [`docs/INTEGRATED_MIND.md`](docs/INTEGRATED_MIND.md). Statements below that
+> tool execution or an authority gateway is absent apply to that archived
+> subsystem snapshot; the current integrated runtime ships four receipt-backed
+> abilities. The numerical experiment results are preserved as a historical
+> evidence manifest and are not re-created by a clean clone.
 
 > **Status.** Habitus is a research prototype, not a claim of artificial general
 > intelligence, consciousness, or a production replacement for retrieval-augmented
@@ -689,9 +693,11 @@ the generated response, row count, boundary assertions, and similarity score.
 8. **No destructive consolidation exists.** Recursive growth can accumulate
    redundant branches. Provenance-preserving bridge, split, and merge rules remain
    open work.
-9. **Tool proposals remain separate from execution authority.** The graph can
-   classify `LOOK` or `DO`, but generated text is never proof of execution. A
-   gateway and read-back receipt are still required.
+9. **The historical substrate stopped before execution authority.** The graph
+   could classify `LOOK` or `DO`, but generated text was never proof of
+   execution. The current `habitus-mind` composition now provides an exact
+   affordance gateway and receipt-backed return for four explicit abilities; a
+   general learned tool library remains future work.
 10. **The evidence set is small.** Four transformer probes are a seam test, not a
     benchmark. The reported rates should not be generalized beyond this matrix.
 

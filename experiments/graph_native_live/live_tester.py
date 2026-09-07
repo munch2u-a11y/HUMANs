@@ -16,7 +16,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
@@ -38,6 +37,7 @@ from habitus_ai.types import (  # noqa: E402
     OutputTrunk,
     RecordType,
 )
+from runtime_paths import native_environment  # noqa: E402
 
 
 QWEN3_06_MODEL = PROJECT_ROOT / "models" / "Qwen3-0.6B-Q8_0.gguf"
@@ -244,12 +244,7 @@ def run_native(
     maximum_tokens: int,
     seed: int,
 ) -> dict[str, Any]:
-    environment = os.environ.copy()
-    environment.setdefault("OLLAMA_LIB_DIR", "/usr/local/lib/ollama")
-    old_library_path = environment.get("LD_LIBRARY_PATH", "")
-    environment["LD_LIBRARY_PATH"] = "/usr/local/lib/ollama" + (
-        f":{old_library_path}" if old_library_path else ""
-    )
+    environment = native_environment()
     command = [
         str(runner),
         str(model),

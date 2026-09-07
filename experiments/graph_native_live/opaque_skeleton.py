@@ -13,7 +13,6 @@ import argparse
 import hashlib
 import json
 import math
-import os
 from pathlib import Path
 import struct
 import subprocess
@@ -35,6 +34,7 @@ from habitus_ai.graph import (  # noqa: E402
 )
 from habitus_ai.pipeline import BaseAgenticMemoryRAG  # noqa: E402
 from habitus_ai.types import GraphSide, InputTrunk, OutputTrunk  # noqa: E402
+from runtime_paths import native_environment  # noqa: E402
 
 
 DIMENSION = 1024
@@ -307,9 +307,7 @@ def run_native(
     seed: int,
     skip_think: bool = False,
 ) -> dict[str, object]:
-    environment = os.environ.copy()
-    environment.setdefault("OLLAMA_LIB_DIR", "/usr/local/lib/ollama")
-    environment["LD_LIBRARY_PATH"] = "/usr/local/lib/ollama"
+    environment = native_environment()
     if skip_think:
         environment["HABITUS_NATIVE_SKIP_THINK"] = "1"
     completed = subprocess.run(

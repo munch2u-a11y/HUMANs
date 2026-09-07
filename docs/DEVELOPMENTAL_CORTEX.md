@@ -110,11 +110,12 @@ receipt plus a hashed checkpoint owned by this cortex lineage.
 The fast CPU run is useful before touching GPU configuration:
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv-rocm/bin/python \
+mkdir -p state/experiments/cortex-checkpoints
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
   experiments/graph_native_live/developmental_cortex_nursery.py \
   --device cpu --tiny --cycles 4 --optimization-steps 160 \
-  --database /tmp/habitus-cortex.sqlite \
-  --checkpoints /tmp/habitus-cortex-checkpoints
+  --database state/experiments/cortex.sqlite \
+  --checkpoints state/experiments/cortex-checkpoints
 ```
 
 This procedural nursery separates training and held-out sensor variations. It
@@ -150,9 +151,13 @@ return. This is a learned referential convention, not free-form conversation.
 
 ## Radeon 780M / ROCm
 
-AMD's ROCm 7.14.1 compatibility matrix lists the Radeon 780M (`gfx1103`) and
-provides a matching multi-architecture PyTorch wheel. The local reproducible
-environment is installed with:
+This optional section records the exact ROCm environment used for the reported
+Radeon 780M (`gfx1103`) probe. The setup script intentionally pins that
+reproduction environment; it is not part of `make setup` and should not be
+treated as a universal or automatically current AMD installer. Check the linked
+AMD compatibility material before changing the pin or a host system.
+
+The pinned environment is installed with:
 
 ```bash
 experiments/graph_native_live/setup_rocm_cortex.sh
@@ -179,11 +184,12 @@ so the 16 GiB shared-memory machine keeps headroom for the desktop and graph
 store. `--precision float16` remains available as an explicit hardware stress
 and rejection probe; it is not a persistent-learning policy.
 
-On this machine the wheel reports PyTorch `2.12.0+rocm7.14.1` and HIP
-`7.14.60850`. The `nemo` login must belong to both GPU-access groups:
+On the originally audited machine the wheel reported PyTorch
+`2.12.0+rocm7.14.1` and HIP `7.14.60850`. The account running the probe must
+belong to both GPU-access groups:
 
 ```bash
-sudo usermod -aG render,video nemo
+sudo usermod -aG render,video "$USER"
 ```
 
 An already-running shell can activate the new membership with `sg render -c`;

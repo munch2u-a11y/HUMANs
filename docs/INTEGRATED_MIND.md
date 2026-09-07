@@ -4,6 +4,10 @@
 cortex, persistent Habitus graph, recurrent desires, SELF pulse, open-weight
 speech, explicit long-term recall, and receipt-backed local abilities.
 
+This document is authoritative for the 0.1.x product path. The historical
+white paper and native GGUF notes describe narrower research lineages. For a
+clean installation, use [Getting started](GETTING_STARTED.md).
+
 ## The runtime boundary
 
 ```text
@@ -42,6 +46,12 @@ It receives no transcript, summary, retrieved record, `identity.md`, or
 `recalled_records_used=0`, and `automatic_text_retrieval=false` so this boundary
 is inspectable rather than a marketing claim.
 
+The default cortex contains 18,015,141 parameters. Its random-born weights and
+lineage are stable, and its hidden state advances and persists with each pulse.
+The graph and recurrent desire field evolve during ordinary use. Cortex gradient
+updates remain explicit, evidence-gated training operations; the interactive
+CLI does not silently train weights on conversational text.
+
 ## Long-term memory is not the bloodstream
 
 Every current HEAR event remains an immutable canonical record. Continuity also
@@ -51,10 +61,12 @@ hidden state, so it does not disappear when a text context window rolls over.
 Exact old language enters behavior only through a selected inspection:
 
 - `remember that ...` senses the opaque `ability:memory-commit` opportunity;
-- SELF must select that exact `DO` affordance;
+- that current opportunity constrains `DO` to the exact ability, and SELF must
+  still select and authorize it;
 - the statement is committed as canonical language memory;
 - `/recall QUERY` senses `ability:memory-recall`;
-- SELF must select that exact `LOOK` affordance;
+- that current opportunity constrains `LOOK` to the exact ability, and SELF
+  must still select and authorize it;
 - matching canonical records return as a current opaque `SEE` result;
 - the verified evidence is reported deterministically, without putting it in an
   LLM history prompt.
@@ -94,6 +106,32 @@ every thought or sentence.
 The prior recent-turn/RAG chat path remains available as `habitus-rag` so the
 architectural difference can be tested directly.
 
+## Run, inspect, and extend it
+
+```bash
+make setup
+make playground
+ollama pull qwen3.5:0.8b
+make doctor
+make run HUMAN_NAME="Your name" AGENT_NAME=Mira
+```
+
+The Make targets use ignored repository-relative `state/` and `workspace/`
+locations. The CLI accepts explicit `--database`, `--checkpoint-directory`, and
+`--workspace` paths; source code contains no developer-home defaults. A mind's
+database and checkpoint directory form one lineage and should be backed up
+together after explicit cortex plasticity.
+
+For a different agent or model, implement the small `ChatModel.generate()`
+protocol and pass it to `IntegratedMind`. The offline example in
+[`examples/api_playground.py`](../examples/api_playground.py) is the minimal
+working integration. It uses a tiny cortex and fake renderer but exercises the
+real SELF, memory, action, receipt, and sensory-return paths.
+
+Use `make verify` for the CPU-only release gate. Use `make smoke` separately for
+one real Ollama-backed turn. [Testing](TESTING.md) explains what each result does
+and does not establish.
+
 ## Honest boundary
 
 The 18,015,141-parameter cortex owns persistent numeric state and participates
@@ -103,3 +141,8 @@ The Ollama motor supplies fluency while receiving only current-event language.
 Replacing that text-only motor with a model exposing a numeric prefix or hidden
 state hook would let the same graph field couple below the token boundary; it is
 an adapter change, not a replacement of the mind, memory, or action runtime.
+
+`/run` limits a selected Python process but does not isolate hostile code from
+the operating-system account. The current four abilities are deliberately
+explicit; automatic tool discovery and a general shell are not part of this
+release.

@@ -5,7 +5,7 @@ independent causal lanes share one persistent Habitus graph without sharing one
 global turn lock. The subsystem is now included in Habitus Mind; the integrated
 product path is documented in [`docs/INTEGRATED_MIND.md`](docs/INTEGRATED_MIND.md).
 
-## Why this branch exists
+## Why this subsystem exists
 
 The experiment tests a narrow architectural claim: language, nonverbal sensory
 returns, notifications, speech, inspection, and action can develop through the

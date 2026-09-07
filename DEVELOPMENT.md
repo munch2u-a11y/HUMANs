@@ -1,234 +1,248 @@
-# Habitus AI — Developer & Technical Architecture Audit 🏛️⚙️
+# Developer guide
 
-[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+This document describes the code that ships as Habitus Mind 0.1.x. It is an
+implementation map, not an architecture wishlist. For installation and command
+examples, begin with [Getting started](docs/GETTING_STARTED.md).
 
-Welcome to the **Habitus AI** Developer & Researcher Audit. This document details the 3D Folded Hourglass Toroidal geometry, Lagrangian free energy physics dynamics, sub-millisecond pure graph digital reflexes, conserved fluid probability mathematics, and experimental benchmarks of the Habitus AI cognitive substrate.
+## Development setup
 
----
+From the repository root:
 
-## 1. 3D Folded Hourglass Toroidal Geometry
-
-The Habitus AI cognitive graph is structured as an **Hourglass folded in 3D Toroidal Space**. The narrow waist forms the central reference anchor (**Layer 0: Self Root Node**), while the $+Y$ perceptual crown and $-Y$ motor crown expand outward and curve back to merge into a single continuous boundary: **Layer 3: Semantic Language Plane**.
-
-![Habitus AI Folded Hourglass Toroidal Architecture](assets/habitus_hourglass_geometry.png)
-
-```mermaid
-graph TD
-    classDef selfNode fill:#4a154b,stroke:#e01e5a,stroke-width:3px,color:#fff;
-    classDef trunkNode fill:#1d3557,stroke:#00b4d8,stroke-width:2px,color:#fff;
-    classDef conceptNode fill:#2a9d8f,stroke:#e76f51,stroke-width:2px,color:#fff;
-    classDef planeNode fill:#03045e,stroke:#90e0ef,stroke-width:3px,color:#fff;
-
-    Layer0["Layer 0: Self Root Node (0,0,0)<br/>(Unlabeled Structural Identity & Stability Anchor)"]:::selfNode
-
-    subgraph Layer1["Layer 1: Stimuli & Action Trunks"]
-        SensoryTrunks["+Y Sensory Stimuli Trunks<br/>(HEAR / SEE / NOTICE)"]:::trunkNode
-        EffectorTrunks["-Y Effector Action Trunks<br/>(SPEAK / LOOK / DO)"]:::trunkNode
-    end
-
-    subgraph Layer2["Layer 2: Concept Mesh & Venn Overlap"]
-        ConceptInput["+Y Perceptual Concept Nodes (1024D Centroids)"]:::conceptNode
-        ConceptOutput["-Y Motor Action Concept Nodes (Output Distributions)"]:::conceptNode
-        VennOverlap["Shared Venn Concept Intersections (Dual-Facet Nodes)"]:::conceptNode
-    end
-
-    Layer3["Layer 3: Semantic Language Plane<br/>(+Y Perceptual Crown & -Y Motor Crown Folded & Merged)"]:::planeNode
-
-    Layer0 ==> SensoryTrunks & EffectorTrunks
-    SensoryTrunks --> ConceptInput
-    EffectorTrunks --> ConceptOutput
-    ConceptInput & ConceptOutput <==> VennOverlap
-    ConceptInput & ConceptOutput ==>|Curved Toroidal Fold| Layer3
+```bash
+make setup
+make playground
+make test
 ```
 
----
+Before shipping, run `make verify`. It adds machine-path and documentation-link
+checks to the offline playground and complete CPU suite. Standard tests do not
+need Ollama or a GPU.
 
-## 2. Layer-by-Layer Data Specifications
+## The product composition
 
-| Layer Level | Layer Name | Spatial Coordinates | Data Contracts & Technical Specifications |
-| :--- | :--- | :--- | :--- |
-| **Layer 0** | **Self Root Node** | Waist Origin `(0, 0, 0)` | **Root Reference Anchor**: Unlabeled structural origin (`SELF`). Houses core stability drive. All initial preference edges originate from here. |
-| **Layer 1** | **Stimuli & Action Trunks** | Immediate Sprouting ($Y = \pm 1$) | **Sensory Intake & Effector Trunks**:<br/>• **+Y Sensory Stimuli Trunks**: `HEAR`, `SEE`, `NOTICE`<br/>• **-Y Effector Action Trunks**: `SPEAK`, `LOOK`, `DO` |
-| **Layer 2** | **Concept Mesh & Venn Overlap** | Expanding Bodies ($Y = \pm 2$) | **Concept Mesh & Venn Intersections**:<br/>• **Vectors**: 1024D normalized float tuples (non-zero norm, no NaN/Inf)<br/>• **Dynamic Splitting**: Triggered when memory attachment variance > threshold<br/>• **Venn Overlap**: Shared dual-facet nodes holding perceptual centroids and action distributions |
-| **Layer 3** | **Semantic Language Plane** | Folded Outer Boundary ($Y = \pm Y_{\text{MAX}}$) | **Merged Toroidal Surface**:<br/>• Merges $+Y_{\text{MAX}}$ perceptual crown and $-Y_{\text{MAX}}$ motor crown into a single continuous symbolic surface<br/>• Serves as the zero-LLM digital reflex utterance feedback loop |
+The `habitus-mind` entry point joins four persistent mechanisms and two adapter
+boundaries:
 
----
-
-## 3. Mathematical Foundations & Conserved Dynamics
-
-### A. Conserved Fluid Edge Mass
-Live edge strengths in Habitus AI use local competition and global flow conservation:
-
-$$\text{effective\_logit}(e, t) = \text{log\_strength}(e) + \text{fast\_recency}(e, t) - \text{conflict\_penalty}(e)$$
-
-$$p(e\mid v,t)=\text{softmax}_{e\in\text{Outgoing}(v)}\left(\frac{\text{effective\_logit}(e,t)}{T}\right),\quad \sum_{e\in\text{Outgoing}(v)}p(e\mid v,t)=1.0$$
-
-For a selected flow lane, the causal `SELF -> trunk` connector is recorded but
-does not compete with other lanes. The Y cipher begins below it with
-$M(trunk)=1$. A node distributes only the mass it received:
-
-$$M(e,t)=M(v,t)p(e\mid v,t),\qquad M(u,t)=\sum_{e:\,e\rightarrow u}M(e,t)$$
-
-Mass is therefore conserved at every active frontier. Merging branches add
-their incoming mass; terminal nodes absorb it. A combined diagnostic snapshot
-assigns half of one reporting budget to each direction, but input and output
-traversals each receive their own full sequential budget. Persistent logits are
-not globally capped, and unrelated regions do not compete unless they share an
-ancestor gate.
-
-### A.1 Six independent runtime lanes
-
-`ConcurrentLaneRuntime` maintains one FIFO worker and one monotonic sequence per
-`HEAR`, `SEE`, `NOTICE`, `SPEAK`, `LOOK`, and `DO` root. Independent workers can
-await simultaneously; there is no whole-turn mutex. Graph and SQLite mutations
-remain short, atomic event-loop-thread commits because the store connection is
-not shared with executor threads. Only external synchronous handlers are sent to
-a worker thread, between the persisted output and persisted return phases.
-
-This is concurrency rather than a claim of six-way parallel graph mutation. A
-blocked lane cannot stall another lane, while two events in the same lane retain
-FIFO causal order. Multiple lanes may converge on one shared concept, but their
-trunk-prefixed traversal receipts remain distinct.
-
-### A.2 Language membrane boundary
-
-Of the three input lanes, only `HEAR` admits word-derived embeddings and exact
-record text into semantic crown vaults and language-facing retrieval. `SEE` and
-`NOTICE` still retain an immutable raw transport for developer inspection, but
-their cognitive projection is nonverbal: a supplied structured sensory vector or
-an opaque exact-payload fallback, lower preference projections, and optional
-opaque child growth without a semantic port. This prevents tool JSON, receipt
-identifiers, filesystem paths, and notification prose from becoming accidental
-vocabulary while preserving causal evidence and habit learning.
-
-### B. Y-Axis Travel Time Cipher
-Path selection is governed by travel time over learned structural branches rather than plain vector cosine distance:
-
-$$\text{travel\_time}(e) = \frac{\Delta y(e)}{\epsilon + \text{local\_probability}(e | v)} + \text{conflict\_penalty}(e)$$
-
-$$\text{path\_time}(\text{path}) = \sum_{e \in \text{path}} \text{travel\_time}(e)$$
-
-### C. Lagrangian Free Energy Field
-Graph state optimization minimizes a Lagrangian free energy functional:
-
-$$\mathcal{F}(q, G) = \mathbb{E}_q[D] - T \cdot H(q) + \lambda \cdot \text{KL}(q \parallel q^*) + \mu \cdot C(G)$$
-
-- **Observation Distortion $\mathbb{E}_q[D]$**: Cosine distance error $\in [0, 2]$.
-- **Shannon Entropy $H(q)$ ($T=0.35$)**: Dispersive thermodynamic exploration pressure.
-- **KL Divergence $\text{KL}(q \parallel q^*)$ ($\lambda=1.0$)**: Conceptual gravity pulling toward learned stable priors $q^*$.
-- **Structural Complexity $C(G)$ ($\mu=6.0$)**: Cost penalty preventing node proliferation.
-
-### D. Action-Outcome Receipt Verification
-Durable edge strength updates occur **only** after receiving a valid `ActionReceipt` bound to a matching proposal ID:
-
-$$\text{log\_strength}(e)_{t+1} = \text{log\_strength}(e)_t + \eta \cdot \Delta \text{stability} \cdot \mathbf{1}_{\{\text{receipt\_verified}\}}$$
-
----
-
-## 4. Sub-Millisecond Pure Graph Reflex Workflow
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Sensor as Sensory Intake (HEAR/SEE/NOTICE)
-    participant Layer0 as Layer 0: Self (0,0,0)
-    participant Layer1 as Layer 1: Trunks
-    participant Layer2 as Layer 2: Concept Mesh
-    participant Layer3 as Layer 3: Semantic Plane
-    participant Gateway as Effector Gateway (SPEAK/LOOK/DO)
-
-    Sensor->>Layer0: pulse(StimulusFrame 1024D, space_id)
-    Layer0->>Layer1: Intake via +Y Sensory Trunk
-    Layer1->>Layer2: Y-traversal & cosine reserve recall
-
-    rect rgb(240, 235, 255)
-        Note over Layer2: Free Energy Minimization & Venn Overlap Activation
-        Layer2->>Layer2: F(q,G) minimization + Mirror Resonance Boost
-    end
-
-    Layer2->>Layer3: Symbolic utterance projection onto Overlapping Semantic Plane
-    Layer2->>Gateway: Submit ActionProposal via -Y Effector Trunk (SPEAK/LOOK/DO)
-    Gateway-->>Sensor: Execute Action & Return ActionReceipt
-    Gateway->>Layer0: Reinforce Edges & Append Transactional SQLite Record
+```text
+HEAR / SEE / NOTICE
+        |
+        v
+BornInHabitusRuntime.advance()
+        |
+        +-- canonical SQLite records and graph projections
+        +-- recurrent drives, pressure, valence, and stability
+        +-- persisted cortex hidden state and cortex proposal
+        `-- SelfPulseKernel ranking and one-use affordance
+                              |
+                 +------------+-------------+
+                 |                          |
+              SPEAK                     LOOK / DO
+                 |                          |
+       current-event renderer        ToolRegistry.execute()
+                 |                          |
+       delivered speech cycle       receipt + SEE / NOTICE
+                                            |
+                                      next full pulse
 ```
 
----
+`BornInHabitusRuntime.advance()` is the authoritative state transition. The
+language model is a downstream speech renderer. A tool handler is a downstream
+actuator. Neither may invent its own authorization or bypass the returned
+sensory cycle.
 
-## 5. Technical Audit: Why Habitus AI Represents the Future of AI Memory & Agent Harnesses
+The default `CortexConfig` has 18,015,141 parameters. Its weights are born from
+the lineage seed; its hidden state is advanced and stored on each pulse. Graph
+structure and recurrent desire state also evolve during ordinary use. Gradient
+updates are evidence-gated operations exposed by the cortex training API and
+developmental nurseries; the interactive CLI does not silently train cortex
+weights on every conversation.
 
-Modern LLM agent architectures face fundamental limitations:
-1. **Prompt Bloat & Hallucination**: Stuffing thousands of tokens into context windows causes exponential latency, attention loss, and factual degradation.
-2. **Unverified Action Drift**: Standard agents treat generated text as executed actions, reinforcing bad strategies without external verification.
-3. **Brittle Memory Systems**: Traditional RAG vector databases dump un-ranked chunks into context without structural routing or factual safety rails.
+## Module ownership
 
-### How Habitus AI Solves All Three
+| Module | Responsibility |
+| --- | --- |
+| `integrated_agent.py` | shippable CLI, current-event speech, explicit memory, local abilities, inspectable turn envelope |
+| `developmental_runtime.py` | one pulse composition, byte-native admission, graph field, cortex proposal, growth, and persistence |
+| `developmental_cortex.py` | random-born recurrent network, hidden-state ledger, evidence validation, plasticity receipts, checkpoints |
+| `self_pulse.py` | sensory buckets, recurrent update, candidate ranking, one-use output authorization, consequence settlement |
+| `recurrent.py` | primitive drives, composite desires, pressure, urgency, satisfaction, and frustration |
+| `graph.py` | conserved directional routing between SELF, six trunks, learned nodes, and crown concepts |
+| `store.py` | canonical SQLite records and transactional ledgers |
+| `pipeline.py` | graph/evidence facade, ingestion, retrieval, growth, and invariant validation |
+| `tools.py` | ability registration, action records, execution receipts, return records, and cycle closure |
+| `functional_agent.py` | workspace policy and older `habitus-rag` comparison runtime |
+| `models.py` | replaceable chat protocol and Ollama adapter |
+| `gestation.py` | one-time identity, relationship, taste seed, and backend profile |
 
-- **Unified Memory Authority & Agent Harness**: Habitus AI combines immutable SQLite canonical memory, structural Y-path graph routing, and single-use effector execution into a single, cohesive engine.
-- **Direct Top-3 Safety Rail**: Direct dense embeddings guarantee that crucial HEAR-language facts (dates, numbers, names, paths, negations) cannot be evicted by graph scores. Nonverbal sensory transports are deliberately ineligible.
-- **Receipt-Gated Learning**: Durable path reinforcement is strictly gated by verified external execution receipts (`ActionReceipt`). Generated text alone never mutates edge strengths.
-- **Conserved Probability Mass**: Softmax fluid weight conservation prevents runaway score accumulation and eliminates long-term memory drift.
+The specialized programs under `experiments/graph_native_live/` are research
+lineages and ablations. They are importable and tested where practical, but are
+not transitively required by `habitus-mind`.
 
-### 5.1 Custom Tool Integration & Emergent Skill Formation
+## Persistent state and lineage
 
-Unlike legacy agent frameworks that require static skill files and hardcoded routing tables, Habitus AI treats tools as dynamic crown concepts connected directly to motor action trunks:
+The database is the primary authority for a mind. It contains canonical records,
+graph nodes and edges, projections, recurrent snapshots, action cycles, outcome
+receipts, cortex lineage metadata, and immutable cortex pulse states. When
+plasticity is explicitly run, checkpoint files live beside the database by
+default and their hashes are recorded in SQLite.
 
-1. **Simple Tool Registration**: Developers can plug in any custom Python function, API client, or shell script using `ToolDefinition(tool_id, trunk, label, description, terms, parameters, handler)` bound to `LOOK` (state inspection), `DO` (state mutation), or `SPEAK` (outbound verbal communication).
-2. **Emergent Skill Consolidation**: As tools are executed and verified via `ToolReceipt`s, lower-vault experience projections form confidence-weighted overlap clusters. Over time, repeated successful tool patterns **naturally coalesce into durable, emergent skills** through fluid edge weight reinforcement—eliminating the need for brittle, static skill prompt catalogs.
+The CLI creates the database parent directory. The authorized workspace must be
+a directory. The default Make targets use these ignored, repository-relative
+locations:
 
----
+```text
+state/habitus.sqlite
+state/developmental_cortex_checkpoints/
+workspace/
+```
 
-## 6. Experimental Benchmarks (LLM-Free Diagnostic Audits)
+The name, familiar human, taste seed, cortex architecture, cortex seed, and
+embedding space belong to the lineage. Reopening the database validates and
+resumes them. It does not re-gestate identity from new flags or silently switch
+the cortex configuration.
 
-> **⚠️ Disclaimer & Methodological Note**
-> *The following experimental results represent isolated diagnostic trials conducted to evaluate the native cognitive capacity and routing physics of the Habitus AI graph topology. They are presented as structural benchmarks of the substrate rather than claims of artificial general intelligence or artificial consciousness.*
+Never mutate or delete a user's SQLite database or checkpoints during a test.
+Use pytest's `tmp_path` or `TemporaryDirectory` for new tests and examples.
 
-### Benchmark A: LLM-Free Language Learning & Symbolic Utterance Projection
+## Conversation path
 
-- **Objective**: Evaluate whether the Habitus AI graph topology can ingest symbolic sensory patterns, build concept centroids, and project meaningful responses onto the Layer 3 semantic plane **without any LLM connected**.
-- **Setup**:
-  - Disconnected all external LLM backends (no Transformer model present).
-  - Fed structured symbolic stimulus vectors through the +Y sensory trunks (`HEAR`, `NOTICE`).
-  - Allowed the lower multi-resolution projection engine to form overlap clusters and promote emergent child nodes.
-- **Results**:
-  - The graph successfully computed Y-path travel times, admitted relevant concept endpoints, and projected matching symbolic utterances onto the Layer 3 merged surface.
-  - Demonstrated sub-millisecond reflex latency (< 0.8 ms per turn) with 100% deterministic pattern reconstruction.
+An ordinary message is stored once as the current `HEAR` event. The integrated
+runtime admits it, advances graph/recurrent/cortex state, and ranks outputs. If
+`SPEAK` is selected, `CurrentEventSpeechRenderer` sends exactly two messages to
+the configured `ChatModel`:
 
-### Benchmark B: LLM-Free Reflective Tool Selection & Action Routing
+1. a fixed motor contract with configured names and a compact numeric-state
+   transduction;
+2. the current human event.
 
-- **Objective**: Test whether the engine can induce reflective tool selection (distinguishing non-mutating state inspection `LOOK` from external mutation `DO`) **without an LLM connected**.
-- **Setup**:
-  - Injected environmental observation frames into `SEE` and state mutation requests into `NOTICE`.
-  - Applied Y-travel time conflict penalties to competing output trunks.
-  - Returned verified execution receipts for valid tool returns while withholding receipts for failed mutations.
-- **Results**:
-  - The substrate correctly classified intents, routing 100% of non-mutating query patterns to `LOOK` and state mutations to `DO`.
-  - Under unverified mutation attempts (receipt withheld), the system correctly refused to reinforce candidate output edges, preserving edge mass distribution for alternative pathways.
+There is no transcript window, automatic retrieval, summary, identity document,
+or skill document in that call. The output record carries counters and flags so
+tests can audit that boundary. The next actual human event settles the prior
+speech cycle as its observed consequence.
 
----
+`ChatModel` is intentionally small:
 
-## 7. Technical Invariants & Runtime Validation
+```python
+class MyMotor:
+    def generate(self, messages) -> str:
+        ...
+```
 
-Every Habitus AI deployment maintains 15 mandatory structural invariants verified at runtime via `GraphRuntime.validate_invariants()`:
+Pass an instance to `IntegratedMind`. The complete disposable example is
+[`examples/api_playground.py`](examples/api_playground.py).
 
-1. Exactly one `SELF` origin exists.
-2. Input frontier is strictly `HEAR`, `SEE`, and `NOTICE`.
-3. Output frontier is strictly `SPEAK`, `LOOK`, and `DO`.
-4. Directional input and output paths share crown concepts and vaults.
-5. Each selected trunk-rooted live flow begins with and accounts for mass `1.0`.
-6. Every non-empty local outgoing frontier sums to `1.0`.
-7. Endpoint semantic score cannot alter Y travel time.
-8. Multi-hop expansion starts from visited Y-path nodes.
-9. Direct dense rail evidence cannot be evicted by graph retrieval scores.
-10. Canonical records in SQLite are immutable; corrections create explicit supersession records.
-11. Unverified output cannot durably reinforce a path.
-12. Persisted embedding identity cannot change silently.
-13. Lower projections contain no natural-language payload.
-14. A promoted child retains every canonical experience that justified it.
-15. Opposing preference bands cannot collapse into the same overlap cluster.
+## Memory path
 
----
+All admitted events remain canonical records, but stored text is not
+automatically placed in the speech prompt.
 
-## 📄 License
+- `remember that ...` and `/remember TEXT` expose the exact opaque
+  `ability:memory-commit` opportunity.
+- SELF must select its `DO` affordance before the fact is committed.
+- `/recall QUERY` exposes the exact `ability:memory-recall` opportunity.
+- SELF must select its `LOOK` affordance before canonical language records are
+  inspected.
+- Returned evidence crosses the pulse as an opaque `SEE` embedding and is then
+  rendered deterministically with its record IDs.
 
-Habitus AI is licensed under the [Apache License 2.0](LICENSE).
+This keeps verbatim evidence retrieval without making retrieval the hidden
+bloodstream of every turn. If you add a memory strategy, preserve canonical
+record IDs, provenance, the explicit output cycle, and the inspectable count of
+records supplied to any language model.
+
+## Ability and receipt lifecycle
+
+The current CLI exposes four abilities:
+
+| ID | Surface | Trunk | Terminal return |
+| --- | --- | --- | --- |
+| `ability:memory-commit` | `/remember` | `DO` | `NOTICE` |
+| `ability:memory-recall` | `/recall` | `LOOK` | `SEE` |
+| `ability:workspace-read` | `/open` | `LOOK` | `SEE` |
+| `ability:workspace-run-python` | `/run` | `DO` | `NOTICE` |
+
+The command parser supplies an exact, one-turn opportunity rather than asking a
+language model to format a tool call. That sensed opportunity constrains its
+motor trunk to the exact currently available ability, so a route strengthened
+by an earlier command cannot hijack a later command. SELF still ranks that
+candidate and must issue its one-use authorization. `ToolRegistry` then:
+
+1. validates and consumes that affordance;
+2. writes the output/action record before external work;
+3. invokes the handler;
+4. records status, output or error, duration, and receipt ID;
+5. queues an opaque sensory return;
+6. advances the full runtime again and closes the action cycle.
+
+Do not report an action as complete before steps 4–6. For mutations, add an
+independent read-back when the environment permits it and assert that artifact
+in tests.
+
+### Adding a bounded ability
+
+Add an ability only when there is a concrete user surface and authority policy:
+
+1. define a stable opaque ability ID;
+2. choose `LOOK` for observation or `DO` for mutation;
+3. implement a narrow handler with explicit limits;
+4. register its `ToolDefinition` in `_register_abilities()`;
+5. place it below the motives it can satisfy or frustrate;
+6. encode returns with `_sensory_encoder()`;
+7. require its exact affordance in the execution call;
+8. test denial, success, error, receipt, sensory return, and restart behavior.
+
+Avoid exposing a general shell. The included runner accepts one root-confined
+`.py` file, launches the current interpreter in isolated mode, clears most of
+the environment, disables stdin, and applies POSIX resource limits. It is still
+not a security sandbox.
+
+## Portability rules
+
+No code or documentation may depend on a contributor's home directory. Use:
+
+- `Path(__file__).resolve()` for shipped assets relative to a module;
+- CLI arguments or documented environment variables for user-selected state,
+  workspace, model, and native-library locations;
+- `tempfile` for disposable artifacts;
+- `os.pathsep`, `sys.platform`, and `os.defpath` for platform-specific runtime
+  details.
+
+Do not guess package-manager prefixes or GPU library locations. The optional
+native experiments honor `OLLAMA_LIB_DIR` only when a user sets it. Run
+`python3 scripts/check_portability.py` after editing source, config, examples,
+Makefiles, shell scripts, or documentation.
+
+## Test design
+
+Prefer behavioral assertions over response-only smoke tests. Depending on the
+change, inspect:
+
+- canonical record text, type, provenance, and ID;
+- selected output trunk and opaque ability ID;
+- action receipt, verified return, terminal status, and outcome ID;
+- file hash, process return code, or reread final artifact;
+- cortex state hash and hidden-state continuity after restart;
+- recurrent pressure/valence changes after a verified consequence;
+- graph conservation and structural invariants.
+
+The default full suite is `make test`; the full release gate is `make verify`.
+Live Ollama tests are intentionally separate under `make smoke`, because model
+availability and generated wording are not deterministic unit-test evidence.
+
+## Documentation authority
+
+Use this order when documents differ:
+
+1. current source and passing behavioral tests;
+2. [Integrated mind runtime](docs/INTEGRATED_MIND.md) and
+   [Architecture contract](ARCHITECTURE.md);
+3. subsystem technical briefs;
+4. historical white paper and experiment snapshots.
+
+Update docs in the same change as a behavior or command. Keep measured research
+results tied to their exact harness and artifact status; do not generalize a
+controlled nursery result into a product capability.
+
+## License
+
+Apache License 2.0. See [LICENSE](LICENSE).

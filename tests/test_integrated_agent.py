@@ -124,6 +124,11 @@ def test_workspace_actions_require_exact_self_affordance_and_cortex_return(
             workspace=tmp_path,
             profile=_profile(runtime),
         )
+        agent.handle("remember that the tool sequence is intentional")
+        prior_recall = agent.handle("/recall tool sequence")
+        assert prior_recall.tool_receipt is not None
+        assert prior_recall.tool_receipt.tool_id == MEMORY_RECALL_ABILITY
+
         opened = agent.handle("/open note.txt")
         assert opened.tool_receipt is not None
         assert opened.tool_receipt.tool_id == WORKSPACE_READ_ABILITY

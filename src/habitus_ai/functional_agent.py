@@ -180,7 +180,7 @@ class WorkspacePolicy:
         if path.stat().st_size > self.maximum_read_bytes:
             raise ValueError("Python file exceeds the configured size limit")
         environment = {
-            "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+            "PATH": os.environ.get("PATH", os.defpath),
             "PYTHONDONTWRITEBYTECODE": "1",
             "PYTHONIOENCODING": "utf-8",
         }

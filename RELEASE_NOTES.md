@@ -27,3 +27,19 @@ and open-weight speech surface as one runnable process.
 The repository therefore starts as a reproducible source release rather than a
 copy of one already-lived mind. Each user creates and owns a distinct local
 lineage on first launch.
+
+## Repository hardening in the current revision
+
+- `make playground` now exercises the complete integrated loop offline with a
+  disposable tiny cortex and editable speech motor;
+- `habitus-doctor` checks the live local-model prerequisites without creating
+  state or enabling a GPU;
+- `make verify` combines portability, documentation, playground, and full CPU
+  checks;
+- `AGENTS.md` and the getting-started/testing guides provide a clean handoff to
+  another human or coding agent;
+- CI runs the same path and documentation checks before behavioral tests;
+- GitHub Actions uses the Node 24-based `checkout@v6` and `setup-python@v6`
+  runtimes; and
+- hard-coded user homes, temporary directories, and native-library install
+  prefixes have been removed from runtime defaults.

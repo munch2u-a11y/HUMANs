@@ -1,3 +1,6 @@
+from pathlib import Path
+import tempfile
+
 import pytest
 from habitus_ai import HabitusAI, OutputTrunk
 from habitus_ai.audio import AudioReflexBridge, AudioReceipt
@@ -17,6 +20,17 @@ def test_audio_speech_synthesis_fallback(tmp_path):
     assert isinstance(receipt, AudioReceipt)
     assert receipt.verified is True
     assert receipt.text == "Hello Josh, Habitus AI voice bridge is online."
+
+def test_default_audio_path_uses_platform_temp_directory(tmp_path, monkeypatch):
+    mind = HabitusAI(tmp_path / "test_default_audio_path.sqlite")
+    bridge = AudioReflexBridge(mind, piper_executable="missing-piper-for-test")
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp_path))
+
+    receipt = bridge.speak("portable temporary audio")
+
+    assert Path(receipt.audio_path).parent == tmp_path
+    assert Path(receipt.audio_path).is_file()
+    mind.close()
 
 def test_audio_reflex_turn_without_llm(tmp_path):
     mind = HabitusAI(tmp_path / "test_audio_mind.sqlite")

@@ -1,36 +1,36 @@
 PROJECT_ROOT := $(abspath ../..)
 MODEL ?= $(PROJECT_ROOT)/models/Qwen3-0.6B-Q8_0.gguf
 LLAMA_CPP_SOURCE ?= $(PROJECT_ROOT)/third_party/llama.cpp
-OLLAMA_LIB_DIR ?= /usr/local/lib/ollama
+OLLAMA_LIB_DIR ?=
 
 .PHONY: build live opaque nursery embodied-nursery reverse-nursery gestate-fast transformer-hatch open-weight cortex-rocm-setup cortex-rocm-probe cortex-nursery communication-nursery test
 
 build:
-	$(MAKE) -C native LLAMA_CPP_SOURCE=$(LLAMA_CPP_SOURCE) OLLAMA_LIB_DIR=$(OLLAMA_LIB_DIR)
+	$(MAKE) -C native LLAMA_CPP_SOURCE="$(LLAMA_CPP_SOURCE)" OLLAMA_LIB_DIR="$(OLLAMA_LIB_DIR)"
 
 live: build
-	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/live_tester.py --model $(MODEL) --show-trace
+	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/live_tester.py --model "$(MODEL)" --show-trace
 
 opaque: build
-	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/opaque_skeleton.py --model $(MODEL)
+	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/opaque_skeleton.py --model "$(MODEL)"
 
 nursery: build
-	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/nursery.py --model $(MODEL)
+	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/nursery.py --model "$(MODEL)"
 
 embodied-nursery:
 	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/embodied_nursery.py
 
 reverse-nursery: build
-	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/reverse_nursery.py --model $(MODEL)
+	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/reverse_nursery.py --model "$(MODEL)"
 
 gestate-fast: build
-	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/accelerated_gestation.py --model $(MODEL)
+	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/accelerated_gestation.py --model "$(MODEL)"
 
 transformer-hatch: build
-	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/transformer_hatch.py --model $(MODEL)
+	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/transformer_hatch.py --model "$(MODEL)"
 
 open-weight: build
-	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/unified_open_weight_agent.py --model $(MODEL)
+	cd ../.. && PYTHONPATH=src python3 experiments/graph_native_live/unified_open_weight_agent.py --model "$(MODEL)"
 
 cortex-rocm-setup:
 	cd ../.. && experiments/graph_native_live/setup_rocm_cortex.sh

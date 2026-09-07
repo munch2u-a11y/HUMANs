@@ -27,11 +27,18 @@ cortex = ["torch>=2.10"]
 
 [project.scripts]
 habitus-mind = "habitus_ai.integrated_agent:main"
+habitus-doctor = "habitus_ai.doctor:main"
 habitus-rag = "habitus_ai.functional_agent:main"
 habitus-demo = "habitus_ai.demo:main"
 habitus-gestate = "habitus_ai.cli:gestate_main"
 habitus-hatch = "habitus_ai.cli:hatch_main"
 habitus-launch = "habitus_ai.app:main"
+
+[project.urls]
+Homepage = "https://github.com/munch2u-a11y/HUMANs"
+Repository = "https://github.com/munch2u-a11y/HUMANs.git"
+Issues = "https://github.com/munch2u-a11y/HUMANs/issues"
+Documentation = "https://github.com/munch2u-a11y/HUMANs#readme"
 
 [tool.setuptools.packages.find]
 where = ["src"]

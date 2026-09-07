@@ -670,6 +670,7 @@ class IntegratedMind:
                 "language_features": False,
             },
             motor_eligible=False,
+            exclusive_output_node_ids=(ability_id,),
         )
 
     def _perceive(

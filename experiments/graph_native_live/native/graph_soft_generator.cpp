@@ -345,7 +345,7 @@ int main(int argc, char ** argv) {
     const char * backend_env = std::getenv("OLLAMA_LIB_DIR");
     const std::string backend_dir = argc >= 6
         ? argv[5]
-        : (backend_env ? backend_env : "/usr/local/lib/ollama");
+        : (backend_env ? backend_env : "");
 
     try {
         if (!std::getenv("HABITUS_NATIVE_VERBOSE")) {
@@ -353,7 +353,11 @@ int main(int argc, char ** argv) {
         }
         const Packet packet = load_packet(packet_path);
         BackendGuard backend;
-        ggml_backend_load_all_from_path(backend_dir.c_str());
+        if (backend_dir.empty()) {
+            ggml_backend_load_all();
+        } else {
+            ggml_backend_load_all_from_path(backend_dir.c_str());
+        }
 
         llama_model_params model_params = llama_model_default_params();
         model_params.n_gpu_layers = 0;

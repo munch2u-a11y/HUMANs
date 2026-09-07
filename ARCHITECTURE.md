@@ -2,20 +2,25 @@
 
 ## Purpose
 
-This package is a compact, inspectable agentic-memory substrate. It preserves the
-useful parts of the bicone design without pretending that graph structure itself
-is an LLM or a source of factual truth.
+This package is a compact, inspectable persistent-agent runtime. The current
+`habitus-mind` composition puts the conserved bicone graph, immutable evidence,
+recurrent desires, random-born cortex, SELF action selection, open-weight speech,
+and four receipt-backed abilities behind one CLI. The graph is not treated as an
+LLM or a source of factual truth.
 
-It combines four things:
+It combines six things:
 
 1. a shared semantic surface for language-level endpoint nomination;
 2. distinct input and output graph traversal from one `SELF` origin;
 3. immutable canonical evidence with direct and graph-local retrieval;
-4. verified outcome learning under conserved relative weights.
+4. verified outcome learning under conserved relative weights;
+5. persistent recurrent drives and a persistent born-in neural state; and
+6. one-use output authorization with observed action receipts.
 
-The graph is the learned routing structure. The SQLite records are the evidence
-authority. An LLM, embedding model, and execution gateway are replaceable
-adapters around that core.
+The graph is learned routing structure. SQLite records are evidence authority.
+The open-weight language model is a replaceable current-event speech motor, and
+local abilities are replaceable actuators around that core. See
+[Integrated Mind Runtime](docs/INTEGRATED_MIND.md) for the exact product boundary.
 
 ## Topology
 
@@ -106,7 +111,7 @@ SQLite is the single authority. Canonical record text, timestamp, source,
 provenance, embedding, type, and metadata are immutable. A correction creates a
 new record that supersedes the old record; it does not overwrite history.
 
-Every recall pulse runs two independent lanes:
+The conserved substrate exposes a two-lane `BaseAgenticMemoryRAG.recall()` path:
 
 ```text
 query
@@ -119,12 +124,16 @@ query
 ```
 
 The lanes meet only by canonical record ID. Graph candidates cannot evict the
-direct safety rail. Exact record text is packed into context without paraphrasing,
-so dates, numbers, names, paths, and negations survive retrieval.
+direct safety rail. This path remains available to `habitus-rag` and controlled
+memory experiments.
 
-Working memory retains recently injected record IDs under a bounded budget. A
-new injection can displace older conversational material while preserving still
-relevant evidence; it does not duplicate that evidence into a second authority.
+The current `habitus-mind` renderer does not call that retrieval path
+automatically. `/recall QUERY` must first be selected as an exact `LOOK` ability;
+it then searches active language records and returns canonical text plus record
+IDs through a receipt-backed `SEE` cycle. Retrieved text is rendered
+deterministically and is not inserted into the Ollama prompt. The older RAG
+surface alone retains recently injected record IDs under a bounded context
+budget; it does not duplicate them into a second authority.
 
 ## Multi-resolution experience memory
 
@@ -132,7 +141,8 @@ Every canonical record has an `experience_id`. For ordinary ingestion this is
 the event ID; a conversational turn deliberately shares one ID across its inbound
 message, outbound response, and delivery receipt.
 
-The exact text and 1024D embedding remain stored once in the canonical record.
+The exact text and configured-space embedding remain stored once in the
+canonical record.
 Lower vaults contain record references plus compact projections:
 
 ```text
@@ -189,34 +199,34 @@ manufacture lower ancestry. Once promoted, later matching traversals continue to
 grow the child vault and overlap cluster.
 
 Potential duplicate branches should eventually be joined by reversible bridges
-before any destructive merge. Destructive merging is not implemented in `0.2.0`;
-canonical evidence must never be merged merely because two vectors are close.
+before any destructive merge. Destructive merging is not implemented in the
+current release; canonical evidence must never be merged merely because two
+vectors are close.
 
 ## Runtime flow
 
 ```text
-typed event
-  -> immutable canonical record
-  -> HEAR / SEE / NOTICE
-  -> semantic endpoint nomination
-  -> input Y traversal
-  -> direct top 3 + path-selected vault retrieval
-  -> bounded first-person context
-  -> external model (optional)
-  -> private / SPEAK / LOOK / DO classification
-  -> authority gateway (outside this package)
-  -> observed receipt or result
-  -> verified relative reinforcement
+current HEAR + pending SEE / NOTICE
+  -> immutable canonical records and numeric projections
+  -> graph field + recurrent update + persisted cortex advance
+  -> cortex proposal participates in SELF candidate ranking
+  -> selected one-use SPEAK / LOOK / DO affordance
+       +-- SPEAK -> current-event Ollama renderer -> delivered output cycle
+       `-- LOOK/DO -> registered local ability -> execution receipt
+                                              -> opaque SEE / NOTICE return
+                                              -> next full SELF pulse
 ```
 
-The package stops at classification. It never treats generated prose as execution.
-An integrating harness must authorize a proposal, execute it, read back the
-result, and return a receipt before durable action learning can occur.
+`BornInHabitusRuntime.advance()` owns the transition through state update and
+authorization. `IntegratedMind` supplies the current user surface and registers
+four exact abilities. `ToolRegistry` writes the action before execution, records
+the observed result, routes it through the appropriate sensory lane, and closes
+the cycle. Generated prose is never treated as execution.
 
 ## Gestation and hatching
 
-The optional nursery adapter begins from the same minimal seed topology rather
-than installing a manufactured biography or skill catalog. Gestation adds:
+Gestation begins from the same minimal seed topology rather than installing a
+manufactured biography or skill catalog. It adds:
 
 - one self-identity concept and immutable name record;
 - one familiar-human concept and immutable relationship record;
@@ -229,16 +239,17 @@ in an ordinary vault and the taste's edge priors remain subject to the same glob
 and local normalization as every later edge. The preset can therefore influence
 early exploration without becoming a permanent personality command.
 
-The hatch shell uses the replaceable `ChatModel` protocol. Its included Ollama
-adapter sends the recalled first-person memory, a bounded selection of persisted
-dialogue, and the current message to a local chat model. There is no separate
-identity prompt. The model sees the agent's name through its own pinned identity
-record.
+The integrated shell uses the replaceable `ChatModel` protocol. Its Ollama
+adapter sees a fixed motor contract, the configured voice and partner names, a
+small numeric-state transduction, and only the current HEAR event. It sees no
+transcript, retrieved text, `identity.md`, or skill body. Incoming and outgoing
+messages become immutable records, and the next human event settles the prior
+speech cycle. That return verifies an observed continuation, not the truth or
+quality of the reply.
 
-Incoming and outgoing messages become immutable records. Repeated novel inputs
-can begin forming evidence-backed branches immediately. A terminal reply is
-reinforced only after the shell prints it and writes a canonical delivery receipt.
-This receipt verifies delivery, not the truth or quality of the reply.
+The older `habitus-rag` hatch shell deliberately keeps bounded dialogue and
+retrieval context as a comparison surface. Its prompt behavior must not be
+confused with the integrated product path.
 
 ## Persisted state
 
@@ -255,9 +266,11 @@ The database contains:
 - traversal traces and outcome packets;
 - embedding-space identity and the pulse counter.
 
-The default runtime database is `agentic_memory.sqlite` in the current
-workspace. Passing `:memory:` is an explicit opt-in for tests and disposable
-experiments; it is never the durable runtime default.
+The `habitus-mind` CLI defaults to `habitus-mind.sqlite`; the repository Make
+targets select `state/habitus.sqlite` and `workspace/`. The database parent is
+created automatically, while the authorized workspace must exist. Passing
+`:memory:` remains an explicit opt-in for tests and disposable experiments; it
+is never the durable CLI default.
 
 The included deterministic hash embedder is an offline test adapter. A production
 embedder must implement `Embedder`, preserve a stable `space_id`, and use the same
@@ -289,15 +302,24 @@ receipt gate.
 
 ## Honest boundaries
 
-The base does not yet provide:
+The current integrated release provides conversation, persistent state, explicit
+recall, file reading, and bounded Python-file execution. Its present limits are:
 
-- a production semantic embedding model or vector index;
-- destructive branch merging or reversible alias-bridge management;
-- automatic skill or tool discovery;
-- tool execution or an authority policy;
-- model adapters beyond the small local Ollama boundary;
-- an upper-layer activation projector;
-- affect, simulated qualia, or developmental claims.
+- the random-born cortex participates in state and action ranking but does not
+  yet generate generally coherent open-ended speech by itself;
+- the interactive CLI does not silently perform gradient training; plasticity
+  is an explicit evidence-gated API and research workflow;
+- the standard semantic surface is a deterministic developmental byte embedder,
+  not a production vector index;
+- abilities are explicitly registered rather than discovered autonomously;
+- `/run` applies useful POSIX limits but is not a hostile-code sandbox;
+- the shipped speech adapter targets Ollama, while custom motors implement the
+  small `ChatModel` protocol;
+- destructive branch merging, reversible alias bridges, and upper-transformer
+  activation control are not implemented; and
+- persistent pressure, valence, and neural state are engineering variables, not
+  evidence of consciousness or simulated qualia.
 
-Those are optional layers. None should be allowed to hide direct evidence, mutate
-canonical history, bypass receipt verification, or turn a graph edge into a fact.
+Future layers must not hide direct evidence, mutate canonical history, bypass
+one-use authorization and receipt verification, or turn graph familiarity into
+a fact.

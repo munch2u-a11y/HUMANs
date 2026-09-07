@@ -1,5 +1,13 @@
 # Graph-native live seam
 
+> **Optional research directory.** The shippable conversation, persistent
+> memory, and file-action runtime is `habitus-mind`, documented in the
+> [project README](../../README.md) and
+> [Integrated Mind Runtime](../../docs/INTEGRATED_MIND.md). Nothing in this
+> directory is required for `make playground`, `make test`, or normal product
+> use. These programs may require a local GGUF, matching llama.cpp headers and
+> libraries, substantial compute, or long-running developmental curricula.
+
 ## Born-in developmental cortex
 
 The new from-scratch path is documented in
@@ -42,9 +50,9 @@ conversation. The script explicitly assumes the measured prelinguistic gate
 owned by `developmental_cortex_nursery.py`; it does not claim that prerequisite
 from its own language trial.
 
-## Unified recurrent open-weight agent
+## Unified recurrent open-weight experiment
 
-The current integrated local build is documented in
+This earlier no-transcript GGUF lineage is documented in
 [`docs/UNIFIED_OPEN_WEIGHT_RUNTIME.md`](../../docs/UNIFIED_OPEN_WEIGHT_RUNTIME.md).
 It adds persistent recurrent activation, endogenous drive pressure, composite
 desire nodes, target-free output competition, receipt-gated satisfaction, and
@@ -90,10 +98,12 @@ fixed codebook of token-embedding anchors. Generated tokens then use the
 ordinary llama.cpp path. This is a train-free bootstrap bridge, not the final
 learned graph projector.
 
-The preferred local model is `~/Downloads/Qwen3-0.6B-Q8_0.gguf`. Its native
-input width is exactly 1024, so the graph boundary and decoder require no
-dimension-changing projection. If that file is absent, the tester falls back
-to the installed Qwen2.5 0.5B GGUF used by the original parity experiment.
+The default model location is the repository-relative
+`models/Qwen3-0.6B-Q8_0.gguf`. Its native input width is exactly 1024, so the
+graph boundary and decoder require no dimension-changing projection. Supply a
+different local location with `MODEL=path/to/model.gguf` or the script's
+`--model` flag. No user home, package-manager prefix, or fallback model path is
+assumed.
 
 ## Run it
 
@@ -101,8 +111,21 @@ The build uses the llama.cpp revision matched to the installed Ollama runtime:
 
 ```bash
 make -C experiments/graph_native_live build
-make -C experiments/graph_native_live live
+make -C experiments/graph_native_live live MODEL=models/Qwen3-0.6B-Q8_0.gguf
 ```
+
+The default source checkout is `third_party/llama.cpp`. To use locations
+elsewhere, pass absolute values assembled by your shell rather than embedding a
+developer's home in source:
+
+```bash
+make -C experiments/graph_native_live build \
+  LLAMA_CPP_SOURCE="$PWD/vendor/llama.cpp" \
+  OLLAMA_LIB_DIR="$PWD/vendor/native-libraries"
+```
+
+`OLLAMA_LIB_DIR` is optional when the dynamic linker can already find the
+required libraries. It is honored only when explicitly set.
 
 Or run one auditable turn:
 
@@ -351,10 +374,12 @@ Run it against a copied gestated database because a pulse intentionally changes
 edge recency and therefore the next propagated flow state:
 
 ```bash
-cp experiments/graph_native_live/accelerated_gestation_runs/MIND.sqlite /tmp/habitus-mind.sqlite
+mkdir -p state/experiments
+cp experiments/graph_native_live/accelerated_gestation_runs/MIND.sqlite \
+  state/experiments/habitus-mind.sqlite
 PYTHONPATH=src:experiments/graph_native_live python3 \
   experiments/graph_native_live/latent_language_pulse.py \
-  --database /tmp/habitus-mind.sqlite \
+  --database state/experiments/habitus-mind.sqlite \
   --once "People consistently keep promises, making cooperation feel safe." \
   --ablations
 ```
@@ -424,10 +449,10 @@ Run one live pulse against a disposable database copy:
 ```bash
 PYTHONPATH=src:experiments/graph_native_live python3 \
   experiments/graph_native_live/outbound_focus.py \
-  --database /tmp/habitus-mind.sqlite \
+  --database state/experiments/habitus-mind.sqlite \
   --once "People consistently keep promises, making cooperation feel safe." \
   --maximum-membranes 2 \
-  --run-directory /tmp/habitus-outbound-run
+  --run-directory state/experiments/habitus-outbound-run
 ```
 
 On the accelerated gestation snapshot, the trust pulse assigned `0.878` gate
@@ -443,8 +468,8 @@ reinforcement, and never invokes generation:
 ```bash
 PYTHONPATH=src:experiments/graph_native_live python3 \
   experiments/graph_native_live/outbound_focus_ablation.py \
-  --database /tmp/habitus-mind.sqlite \
-  --output /tmp/habitus-outbound-ablation.json
+  --database state/experiments/habitus-mind.sqlite \
+  --output state/experiments/habitus-outbound-ablation.json
 ```
 
 Across the 36 accelerated-nursery topics, the hierarchical gate recovered the

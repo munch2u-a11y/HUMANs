@@ -22,14 +22,16 @@ random seed, consumes current UTF-8 bytes plus a numeric projection of the live
 Habitus graph, and changes weights only through explicitly admitted local
 training episodes.
 
-The architecture has crossed an important implementation threshold. It can run
-the full 18,015,141-parameter cortex on the local Radeon 780M, persist neural
+The architecture has crossed an important implementation threshold. The
+audited research environment ran the full 18,015,141-parameter cortex on a
+Radeon 780M, persisted neural
 state and hashed checkpoints, grow opaque concepts from three sensory trunks,
 authorize all three motor trunks, close output-first experience cycles through
 verified returns, and learn simple held-out sensory/consequence regularities in
 a procedural nursery without a pretrained tokenizer or rolling text context.
 
-It has not yet crossed the autonomous conversational-agent threshold. The graph
+The cortex-only speech path has not yet crossed the open-ended conversational
+threshold. The graph
 and recurrent kernel still own eligibility and one-use motor authorization, but
 the cortex now contributes bounded learned action/consequence proposals to that
 live competition. SPEAK can select a self-grown whole-form motor, emit it byte
@@ -37,11 +39,13 @@ by byte, carry its hidden state forward, receive a listener's verified return,
 and train from that exact closed cycle. Across three tiny seeded conventions,
 the coupled path caused 18/18 held-out listener actions without prompt text or
 runtime memory retrieval. This remains referential signaling, not composed
-conversation: non-language tools are externally scaffolded, HEAR recognition
+conversation: nursery tools are externally scaffolded, HEAR recognition
 does not yet drive responses, and the graph and neural cortex remain explicitly
 coupled subsystems rather than one differentiable weight field. The most
-accurate description is therefore **a causal developmental hybrid with a
-working born-in signaling loop**, not yet a mature unified neural mind.
+accurate description of the cortex subsystem is therefore **a causal
+developmental hybrid with a working born-in signaling loop**. The shippable
+`IntegratedMind` adds coherent current-event speech and four concrete abilities
+without representing those adapter capabilities as cortex-only learning.
 
 ## 1. Scope and terminology
 
@@ -52,6 +56,11 @@ In this paper, **the current model** means the path assembled by:
 - [`developmental_cortex.py`](../src/habitus_ai/developmental_cortex.py);
 - [`developmental_curriculum.py`](../src/habitus_ai/developmental_curriculum.py);
 - the graph, recurrent field, and SQLite store beneath them.
+
+The product composition additionally includes
+[`integrated_agent.py`](../src/habitus_ai/integrated_agent.py), which seeds
+persistent drive nodes, installs four exact memory/workspace abilities, and
+attaches a current-event Ollama speech motor downstream of SELF.
 
 The older `NoContextPlanner` / `DevelopmentalLanguage` /
 [`unified_open_weight_agent.py`](../experiments/graph_native_live/unified_open_weight_agent.py)
@@ -74,50 +83,37 @@ gradient descent.
 ## 2. System overview
 
 ```text
-                         ENVIRONMENT
-                current signals and later returns
-                                |
-                 +--------------+--------------+
-                 |              |              |
-              NOTICE           SEE            HEAR
-                 |              |        UTF-8 byte receptor
-                 +--------------+--------------+
-                                |
-                      durable sensory inbox
-                                |
-                     immutable canonical records
-                                |
-          trunk + preference + sparse sensory-fiber growth
-                                |
-          observed endpoints collapse inward along input routes
-                                |
-                         SELF PULSE KERNEL
-             one recurrent reconciliation for the whole frame
-                                |
-              +-----------------+-----------------+
-              |                                   |
-       graph/recurrent state                  numeric graph field
-       chooses motor routes                         + HEAR bytes
-              |                                   |
-       DO / LOOK / SPEAK                    random-born GRU cortex
-       one-use authorizations                persistent hidden state
-              |                              learned diagnostic heads
-              |                                   |
-       caller supplies action text          explicit consolidation only
-              |                                   |
-       open experience cycle <---------- evidence validation
-              |
-       observed terminal return
-              |
-       NOTICE / SEE / HEAR on next pulse
-              |
-       exact graph-path credit + admissible neural training episode
+                    current ENVIRONMENT signals
+                               |
+                    NOTICE + SEE + HEAR bytes
+                               |
+            canonical records + trunk-rooted graph growth
+                               |
+              +----------------+----------------+
+              |                                 |
+      graph and recurrent field        random-born GRU cortex
+              |                        persistent hidden state
+              |                        bounded causal proposal
+              +----------------+----------------+
+                               |
+                      SELF candidate ranking
+                               |
+                  one-use DO / LOOK / SPEAK
+                               |
+                  output-first experience cycle
+                               |
+                    observed terminal return
+                               |
+                  NOTICE / SEE / HEAR next pulse
+                               |
+          exact graph credit + admissible training evidence
 ```
 
-The solid causal control path currently runs through the graph and
-`SelfPulseKernel`. The cortex is synchronized with that path and learns from
-its receipts, but the arrow from cortical outputs back into action selection is
-not yet implemented.
+The causal control path runs through `SelfPulseKernel`. A proposal bound to the
+current model, graph field, and sensory payload contributes bounded action
+support, consequence prediction, and confidence to ordinary candidate ranking.
+The graph still owns eligibility and one-use authorization, so the cortex cannot
+invent or directly execute an unavailable action.
 
 ## 3. Main subsystems
 
@@ -186,8 +182,9 @@ Graph learning has two distinct updates:
 `DevelopmentalByteEmbedder` is the current HEAR receptor. It is fixed, not
 pretrained: UTF-8 byte and byte-pair features are mapped into a deterministic
 signed hash space. SEE and NOTICE require numeric vectors from an external
-sensor or environment adapter; there is not yet a learned camera, filesystem,
-terminal, or body encoder in this path.
+sensor or environment adapter. `IntegratedMind` provides deterministic opaque
+encoders for its four memory/workspace returns; there is not yet a learned
+camera, filesystem, terminal, or body encoder.
 
 For every newly admitted record, the graph grows from the record's actual input
 trunk and current preference band. Deterministic sparse hyperplanes create six
@@ -222,11 +219,13 @@ for two bounded graph steps. Nodes explicitly typed as `drive`, `desire`, or
 positive returns relieve pressure on desire nodes present on the credited path;
 negative returns frustrate them. Unverified outcomes cannot do either.
 
-The mechanism supports complex desires, but a fresh `BornInHabitusRuntime`
-does not currently create any desire nodes. The GPU nursery database contains
-none. The desire-rich gestation code belongs to the older bootstrap path, so
-complex endogenous desire is supported infrastructure rather than a
-demonstrated property of the present born-in model.
+`BornInHabitusRuntime` alone does not seed desire nodes, which keeps cortex
+nurseries minimal. The shippable `IntegratedMind` calls
+`ensure_integrated_foundations()` and persistently registers six primitive
+drives plus three opaque composites. Their pressures and valences participate
+in live ability paths and change after verified consequences. These are
+engineered initial drives whose numeric state evolves; self-grown new drive
+categories remain a research goal.
 
 ### 3.5 SELF pulse authority
 
@@ -261,8 +260,11 @@ Returns are physically paired with their action channels:
 
 The generic `ToolRegistry` has a tested kernel-backed mode that persists a tool
 cycle before calling its handler and settles success/error through the paired
-receptor. `BornInHabitusRuntime` does not yet create that registry, choose a
-specific tool, or generate its arguments automatically.
+receptor. `BornInHabitusRuntime` remains reusable without a registry.
+`IntegratedMind` constructs one and installs memory commit, memory recall,
+workspace read, and bounded Python-file execution. Its explicit command adapter
+supplies validated arguments; autonomous language-derived argument formation is
+not part of this release.
 
 ### 3.6 Developmental curriculum
 
@@ -417,6 +419,14 @@ cycle. The completed SPEAK path currently covers raw learned-stop generation
 and selection among promoted whole-form motors; it does not yet recognize heard
 forms as grounded input or compose novel multi-form responses.
 
+The product overlay takes a deliberately different final step: after this same
+pulse selects `SPEAK`, a local Ollama model renders only the current event plus a
+compact numeric-state transduction. After an exact `/remember`, `/recall`,
+`/open`, or `/run` opportunity is selected, the registered handler executes and
+its verified return passes through the same next-pulse route. This gives the
+shipped application coherent conversation and bounded useful actions while the
+cortex-only composition work continues.
+
 ## 5. What is genuinely unified—and what is not
 
 The current build is substantially more unified than a memory sidecar around a
@@ -448,8 +458,9 @@ eligibility and one-use authorization; the proposal cannot bypass it.
 
 ### 6.1 Automated tests
 
-The current worktree collects 133 tests, and the complete suite passes in the
-PyTorch environment. Focused coverage includes:
+The complete CPU suite is run with `make test`; `make verify` also checks
+portability, documentation links, and the offline integrated playground.
+Focused coverage includes:
 
 - trunk topology and conserved graph mass;
 - bounded sensory growth and cross-trunk promotion;
@@ -467,10 +478,10 @@ PyTorch environment. Focused coverage includes:
 - non-finite-loss rejection before a plasticity receipt;
 - a small CPU developmental nursery.
 
-The regular suite now exercises a meaningful but tiny learned signaling
-convention on CPU. It does not exercise ROCm on every run, open-ended speech, a
-human transport channel, autonomous tool argument creation, or long-duration
-development.
+The regular suite now exercises both a meaningful but tiny learned signaling
+convention and the integrated conversation/memory/file-action wiring on CPU.
+It does not exercise ROCm on every run, live Ollama generation, autonomous tool
+argument creation, or long-duration development.
 
 ### 6.2 Radeon execution
 
@@ -568,20 +579,23 @@ synthetic, three seeds remain a small sample, and the communication nursery
 explicitly asserts the separately tested prelinguistic prerequisite. It is not
 evidence of open conversation or language-scale comprehension.
 
-### 6.5 Evidence artifacts
+### 6.5 Historical evidence manifest
 
-The current local reports are temporary files and should be copied into a
-versioned evidence directory before `/tmp` is cleared:
+These report hashes were recorded during the audited development run. The
+files themselves are not shipped in a clean source clone, so the table is a
+historical manifest rather than currently reproducible evidence. New reports
+should go in a run-specific, repository-relative evidence directory before
+publication.
 
 | Artifact | SHA-256 |
 |---|---|
-| `/tmp/habitus-rocm-cortex-full-fp32-final.json` | `a62886f13a9818fb9180ca3e0577a9a4aab89f8b27d3eb23cfd3fdf74f7f248b` |
-| `/tmp/habitus-cortex-amd-full-v17.json` | `e31e76469117bf903c715b7489a54c81c284f935796fe8d321b7a7b0e5cc904d` |
-| `/tmp/habitus-cortex-amd-v16.json` | `7073f51f36243ed8200e7cf987e5f2baab8dd9308215e17ec659bfe4a9f91ab9` |
-| `/tmp/habitus-rocm-cortex-tiny-fp16-rejection.json` | `268491ded109e395ce065ef5d48741eecd002fb259fd05f041b0f6a1e1811d03` |
-| `/tmp/habitus-comm-nursery-recurrent-01.json` | `8ef22eb156a22196238bfcc9005ce38b919d17a62d3577981365a691424345d0` |
-| `/tmp/habitus-comm-seed-3141.json` | `a6c4d4832bf2936c537f4e1c8b6d5ef12290fc43ac2929a848484b0d09972862` |
-| `/tmp/habitus-comm-seed-1618.json` | `5bbe5ef47e997f8cc36537d1c7a7beb45a705fc456a4f7217aedde39681d454c` |
+| `habitus-rocm-cortex-full-fp32-final.json` | `a62886f13a9818fb9180ca3e0577a9a4aab89f8b27d3eb23cfd3fdf74f7f248b` |
+| `habitus-cortex-amd-full-v17.json` | `e31e76469117bf903c715b7489a54c81c284f935796fe8d321b7a7b0e5cc904d` |
+| `habitus-cortex-amd-v16.json` | `7073f51f36243ed8200e7cf987e5f2baab8dd9308215e17ec659bfe4a9f91ab9` |
+| `habitus-rocm-cortex-tiny-fp16-rejection.json` | `268491ded109e395ce065ef5d48741eecd002fb259fd05f041b0f6a1e1811d03` |
+| `habitus-comm-nursery-recurrent-01.json` | `8ef22eb156a22196238bfcc9005ce38b919d17a62d3577981365a691424345d0` |
+| `habitus-comm-seed-3141.json` | `a6c4d4832bf2936c537f4e1c8b6d5ef12290fc43ac2929a848484b0d09972862` |
+| `habitus-comm-seed-1618.json` | `5bbe5ef47e997f8cc36537d1c7a7beb45a705fc456a4f7217aedde39681d454c` |
 
 ROCm emits a `rocSHMEM Could not open libnuma` warning in this environment, but
 the tested PyTorch/HIP operations complete successfully. It remains an
@@ -607,17 +621,19 @@ state. Promoted whole utterances can also terminate through their learned graph
 boundary. Current evidence covers selection among tiny whole-form motors, not
 novel sentence composition or open dialogue.
 
-**3. Non-language substantive actions remain externally scaffolded.** The
+**3. General learned tool use remains externally scaffolded.** The
 communication nursery no longer supplies outbound message text: SELF and the
 cortex/graph choose a learned motor form. Earlier motor nurseries still use
-Python carriers, however, and the born-in cortex does not yet select a specific
-tool/module, form arguments, execute it, or inspect the resulting artifact.
+Python carriers. The integrated product now selects and executes four exact
+memory/workspace affordances with receipts and sensory returns, but it does not
+discover unfamiliar tools, derive arbitrary arguments from ordinary language,
+or autonomously compose multi-step plans.
 
-**4. A fresh born-in mind has no self-grown desires.** Recurrent desire dynamics
-are implemented, but no current developmental rule promotes recurring
-preference/pressure patterns into drive nodes. Without importing the older
-desire nursery, motor behavior is primarily route weighting plus a hand-coded,
-stage-annealed exploration schedule.
+**4. Product drives are integrated, but new drive categories are not
+self-grown.** The product seeds six primitive and three composite opaque desire
+nodes whose pressures and valences evolve through experience. No developmental
+rule yet promotes recurring preference/pressure patterns into genuinely new
+drive nodes. Minimal cortex nurseries intentionally omit the product seeds.
 
 ### High priority: strengthen learning authority
 
@@ -693,10 +709,11 @@ growth, cycle closure, outcome records, and edge reinforcement may commit before
 that final transaction. A failed SELF reconciliation therefore leaves
 inspectable/retryable evidence but not a fully all-or-nothing world transition.
 
-**15. The audited model is not yet commit-addressable.** The branch HEAD predates
-the current cortex changes, which remain in a dirty worktree. The code, reports,
-database, environment manifest, and commands must be frozen together before
-this snapshot can serve as a reproducible research baseline.
+**15. Source is commit-addressable; historical evidence is not bundled.** The
+functional-alpha source and tests are now versioned, but the reports listed in
+Section 6.5 and their databases/checkpoints are not shipped. A future research
+release must freeze code, reports, state artifacts, and an environment manifest
+together before those numerical results count as clean-clone reproducibility.
 
 ## 8. Claim matrix
 
@@ -709,20 +726,24 @@ this snapshot can serve as a reproducible research baseline.
 | Learns verified simple consequences | demonstrated narrowly | four-state synthetic held-out nursery |
 | Grows cross-modal opaque patterns | demonstrated structurally | focused tests and nursery graph |
 | Learns useful signals | demonstrated narrowly | three seeded conventions caused 18/18 held-out listener actions |
-| Expresses complex internal desires | not demonstrated in fresh born-in runtime | mechanism exists; desire nodes are absent |
-| Chooses and performs useful tools autonomously | not demonstrated | generic kernel/tool bridge exists; cortex planning does not |
-| Produces coherent conversation | not demonstrated | current speech is tiny whole-form signaling, not composed dialogue |
+| Maintains evolving primitive/composite desires | demonstrated in integrated runtime | seeded categories, persisted pressure/valence, receipt tests |
+| Grows entirely new desire categories | not demonstrated | developmental promotion rule is absent |
+| Chooses and performs useful explicit abilities | demonstrated for four commands | exact SELF affordance, receipt, sensory return, file/memory tests |
+| Discovers tools or composes autonomous multi-step plans | not demonstrated | explicit command adapter currently supplies ability and arguments |
+| Produces coherent conversation | demonstrated through current-event Ollama motor | cortex authorizes SPEAK; fluency is supplied by open weights, not cortex-only byte generation |
 | Forms beliefs comparable to a person or Helix | not established | only distributed dispositions and records exist |
 | Is one singular neural weight system | no | coordinated graph, recurrent, curriculum, and GRU state |
 | Is a mature AI agent | no | developmental substrate only |
 
 ## 9. Recommended next research sequence
 
-### Phase 0: freeze this baseline
+### Phase 0: freeze this baseline — source release passed
 
-Commit or tag the exact working tree, copy the evidence reports and their
-databases/checkpoints into a versioned run directory, and add a machine-readable
-environment manifest. Preserve the FP16 rejection as a regression case.
+The source, runnable product, and deterministic tests are commit-addressable.
+The remaining research-release work is to copy the historical evidence reports
+and their databases/checkpoints into a versioned run directory and add a
+machine-readable environment manifest. Preserve the FP16 rejection as a
+regression case.
 
 ### Phase 1: make cortical outputs causally matter — narrow gate passed
 
@@ -742,13 +763,14 @@ learned neural stop or a promoted whole-form boundary; invalid UTF-8 is rejected
 before actualization. The remaining gate is productive composition and response
 to recognized HEAR input rather than selection among complete learned forms.
 
-### Phase 3: connect specific embodied capabilities
+### Phase 3: connect specific embodied capabilities — explicit gate passed
 
-Expose concrete tools/modules beneath DO and LOOK as graph affordances. Let the
-cortex/graph choose among authorized IDs while a constrained adapter owns
-substantive execution. Train only from receipts and final artifact read-back.
-Evaluate complete trajectories such as open → write → reread → execute →
-explain, including interrupted and misleading-return controls.
+The integrated runtime now exposes memory commit/recall and workspace read/run
+beneath exact DO and LOOK affordances. A constrained adapter owns execution,
+and success/error returns re-enter the cortex as SEE or NOTICE. The remaining
+gate is learned selection and composition across unfamiliar multi-step
+trajectories such as open → write → reread → execute → explain, including
+interrupted and misleading-return controls.
 
 ### Phase 4: make development evidence-authoritative
 
@@ -786,8 +808,11 @@ trained locally with substantial memory headroom.
 The first causal language closure now exists: cortical state influences an
 authorized SPEAK route, SELF selects and emits the exact motor bytes, a listener
 acts because of them, and the verified return changes later preference and
-plasticity. The next decisive milestone is compositionality: recognized HEAR
+plasticity. The cortex-only next milestone is compositionality: recognized HEAR
 forms must activate their lived routes, learned transitions must construct
 novel multi-form outputs, and success must survive unseen combinations,
-multi-seed controls, and eventually a human communication channel. That is the
-line between the present signaling learner and a conversational agent.
+multi-seed controls, and eventually a human communication channel. Meanwhile,
+the shippable composition already provides coherent current-event conversation,
+explicit long-term recall, evolving drives, and four receipt-backed abilities
+through its open-weight motor and deterministic adapters. Those product
+capabilities should not be mistaken for cortex-only developmental achievements.

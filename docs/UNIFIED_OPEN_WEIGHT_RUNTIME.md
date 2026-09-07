@@ -1,5 +1,11 @@
 # Unified open-weight runtime
 
+> **Optional research lab.** This document covers the native GGUF,
+> graph-generated lexical runtime under `experiments/graph_native_live/`. It is
+> not the default `habitus-mind` application and is not required to install,
+> test, or extend the shippable Ollama-backed product. Begin with
+> [Integrated Mind Runtime](INTEGRATED_MIND.md) for the current product.
+
 The random-weight cortex that grows directly inside this pulse contract is
 documented separately in
 [`DEVELOPMENTAL_CORTEX.md`](DEVELOPMENTAL_CORTEX.md). The GGUF-backed path below
@@ -273,9 +279,10 @@ return.
 For an isolated one-turn run:
 
 ```bash
+mkdir -p state/experiments/open-weight-runs
 PYTHONPATH=src python3 experiments/graph_native_live/unified_open_weight_agent.py \
-  --database /tmp/habitus-open-weight.sqlite \
-  --run-directory /tmp/habitus-open-weight-runs \
+  --database state/experiments/open-weight.sqlite \
+  --run-directory state/experiments/open-weight-runs \
   --once "What matters to you before we continue?" \
   --show-receipt
 ```
