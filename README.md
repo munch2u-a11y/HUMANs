@@ -5,7 +5,7 @@ consequences live in one continuing runtime—not in a repeatedly reconstructed
 prompt.**
 
 Habitus Mind is a functional alpha you can talk to, restart, teach explicit
-facts, and authorize to inspect or run files. Its 18,015,141-parameter
+facts, and authorize to inspect or run files. Its 18,016,166-parameter
 random-born cortex, recurrent desire field, structural graph, and canonical
 SQLite record store persist together. A local open-weight model supplies fluent
 speech only after the mind has selected a `SPEAK` action.
@@ -29,7 +29,7 @@ clean checkout creates a new local lineage owned by its operator.
 | Conversation | Local Ollama model renders the current `HEAR` event after `SPEAK` authorization |
 | Continuity | Persisted recurrent field, neural hidden state, graph dynamics, and immutable event records |
 | Long-term recall | `/remember` commits canonical evidence; `/recall` performs an explicit receipt-backed `LOOK` |
-| File sensing | `/open` reads one UTF-8 file inside the authorized workspace and returns content plus SHA-256 |
+| Workspace sensing | `/open` lists one folder or reads one UTF-8 file inside the authorized workspace; files include a SHA-256 |
 | File execution | `/run` executes one named Python file with time, memory, descriptor, and output limits |
 | Inspectability | `/state` and `--json` expose pulse IDs, selected outputs, evidence IDs, receipts, hashes, and graph invariants |
 
@@ -48,8 +48,8 @@ make playground
 make test
 ```
 
-The playground runs the integrated conversation, memory, recall, file-read,
-file-run, receipt, and state paths with a tiny cortex and an editable fake
+The playground runs the integrated conversation, memory, recall, folder-list,
+file-read, file-run, receipt, and state paths with a tiny cortex and an editable fake
 speech motor. It is disposable, CPU-only, and needs no Ollama service, model
 download, network request, or existing database.
 
@@ -58,11 +58,15 @@ download, network request, or existing database.
 Install and start [Ollama](https://ollama.com/), then:
 
 ```bash
-ollama pull qwen3.5:0.8b
+ollama pull qwen3.5:2b
 make doctor
 make smoke HUMAN_NAME="Your name" AGENT_NAME=Mira
 make run HUMAN_NAME="Your name" AGENT_NAME=Mira
 ```
+
+The 2B model is the default because it follows the mind's voice contract more
+reliably. On a tighter machine, use `MODEL=qwen3.5:0.8b`; memory and abilities
+still work, but conversational quality is less consistent.
 
 By default this uses `state/habitus.sqlite` and authorizes only `workspace/`.
 Override any location explicitly; no developer-specific home path is assumed:
@@ -99,6 +103,7 @@ Then enter:
 Hello. What should I call you?
 remember that my launch color is ultraviolet
 /recall launch color
+/open .
 /open hello.py
 /run hello.py
 /state
@@ -183,7 +188,7 @@ make verify
 
 The tests cover restart continuity, absence of transcript/retrieval injection,
 exact action authorization, receipt-backed sensory return, explicit memory,
-root-confined file access, bounded execution, graph invariants, developmental
+root-confined folder/file access, bounded execution, graph invariants, developmental
 learning, and controlled nursery experiments. A test pass demonstrates those
 specific behaviors; it does not stand in for a claim of consciousness or
 general intelligence.
@@ -194,7 +199,7 @@ documentation links, and runs the disposable integrated playground. See
 
 ## Security
 
-`/open` resolves the selected file beneath the configured workspace. `/run`
+`/open` resolves the selected folder or file beneath the configured workspace. `/run`
 adds useful process limits, but it is **not a hostile-code sandbox**: Python
 code you authorize can still use the permissions of your local account. Point
 `--workspace` at a directory containing code you trust. See

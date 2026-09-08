@@ -22,7 +22,7 @@ from .types import EventKind, OutputTrunk, RecordType
 
 
 DEFAULT_DATABASE = Path("habitus-functional.sqlite")
-DEFAULT_MODEL = "qwen3.5:0.8b"
+DEFAULT_MODEL = "qwen3.5:2b"
 FACT_CONTEXT_CHARS = 4_000
 MAX_DISPLAY_CHARS = 8_000
 HELP_TEXT = (
@@ -108,7 +108,7 @@ class FunctionalHatchedAgent(HatchedAgent):
 
 
 class WorkspacePolicy:
-    """Explicit, root-confined file inspection and bounded Python execution."""
+    """Explicit, root-confined path inspection and bounded Python execution."""
 
     def __init__(
         self,
@@ -118,6 +118,7 @@ class WorkspacePolicy:
         run_timeout_seconds: float = 10.0,
         run_memory_bytes: int = 1_073_741_824,
         maximum_output_chars: int = 64_000,
+        maximum_directory_entries: int = 512,
     ) -> None:
         self.root = Path(root).resolve()
         if not self.root.is_dir():
@@ -126,11 +127,12 @@ class WorkspacePolicy:
         self.run_timeout_seconds = max(0.1, float(run_timeout_seconds))
         self.run_memory_bytes = max(64 * 1024 * 1024, int(run_memory_bytes))
         self.maximum_output_chars = max(1_000, int(maximum_output_chars))
+        self.maximum_directory_entries = max(1, int(maximum_directory_entries))
 
-    def resolve_file(self, supplied: str) -> Path:
+    def resolve_path(self, supplied: str) -> Path:
         raw = str(supplied).strip()
         if not raw:
-            raise ValueError("a workspace-relative file path is required")
+            raise ValueError("a workspace-relative path is required")
         requested = Path(raw)
         candidate = requested if requested.is_absolute() else self.root / requested
         resolved = candidate.resolve(strict=True)
@@ -138,10 +140,14 @@ class WorkspacePolicy:
             resolved.relative_to(self.root)
         except ValueError as error:
             raise PermissionError(
-                f"file is outside the authorized workspace: {raw}"
+                f"path is outside the authorized workspace: {raw}"
             ) from error
+        return resolved
+
+    def resolve_file(self, supplied: str) -> Path:
+        resolved = self.resolve_path(supplied)
         if not resolved.is_file():
-            raise FileNotFoundError(f"not a regular file: {raw}")
+            raise FileNotFoundError(f"not a regular file: {supplied}")
         return resolved
 
     def read_file(self, supplied: str) -> dict[str, Any]:
@@ -158,9 +164,46 @@ class WorkspacePolicy:
             raise ValueError("file is not valid UTF-8 text") from error
         return {
             "path": str(path.relative_to(self.root)),
+            "kind": "file",
             "size_bytes": len(payload),
             "sha256": hashlib.sha256(payload).hexdigest(),
             "content": content,
+        }
+
+    def inspect_path(self, supplied: str) -> dict[str, Any]:
+        """Read a text file or list one directory without leaving the root."""
+        path = self.resolve_path(supplied)
+        if path.is_file():
+            return self.read_file(supplied)
+        if not path.is_dir():
+            raise FileNotFoundError(f"not a regular file or directory: {supplied}")
+
+        entries: list[dict[str, Any]] = []
+        children = sorted(path.iterdir(), key=lambda item: item.name.casefold())
+        visible = children[: self.maximum_directory_entries]
+        for child in visible:
+            if child.is_symlink():
+                kind = "symlink"
+                size = None
+            elif child.is_dir():
+                kind = "directory"
+                size = None
+            elif child.is_file():
+                kind = "file"
+                try:
+                    size = child.stat().st_size
+                except OSError:
+                    size = None
+            else:
+                kind = "other"
+                size = None
+            entries.append({"name": child.name, "kind": kind, "size_bytes": size})
+        return {
+            "path": str(path.relative_to(self.root)),
+            "kind": "directory",
+            "entry_count": len(children),
+            "entries": entries,
+            "truncated": len(children) > len(visible),
         }
 
     def _child_limits(self) -> None:
@@ -255,11 +298,13 @@ class FunctionalAgent:
             ToolDefinition(
                 tool_id="tool:workspace_read",
                 trunk=OutputTrunk.LOOK,
-                label="Read Workspace File",
-                description="Open and read one authorized UTF-8 workspace file.",
-                terms=("open", "read", "inspect", "file", "workspace"),
+                label="Inspect Workspace Path",
+                description=(
+                    "List one authorized workspace folder or read one UTF-8 file."
+                ),
+                terms=("open", "read", "inspect", "folder", "file", "workspace"),
                 parameters={"path": {"type": "string"}},
-                handler=_tool_handler(self.workspace.read_file, "path"),
+                handler=_tool_handler(self.workspace.inspect_path, "path"),
             )
         )
         self.tools.register_tool(
@@ -303,7 +348,7 @@ class FunctionalAgent:
         except ValueError as error:
             raise ValueError(f"invalid quoted path: {error}") from error
         if len(pieces) != 1:
-            raise ValueError("supply exactly one file path; quote paths containing spaces")
+            raise ValueError("supply exactly one workspace path; quote paths containing spaces")
         return pieces[0]
 
     def _finish_speech(
@@ -381,6 +426,22 @@ class FunctionalAgent:
             return f"I could not complete {receipt.tool_id}: {receipt.error}"
         output = receipt.output if isinstance(receipt.output, Mapping) else {}
         if receipt.tool_id == "tool:workspace_read":
+            if output.get("kind") == "directory":
+                rendered_entries = []
+                for entry in output.get("entries", ()):
+                    marker = "/" if entry.get("kind") == "directory" else ""
+                    rendered_entries.append(
+                        f"[{entry.get('kind', 'other')}] {entry.get('name', '')}{marker}"
+                    )
+                if output.get("truncated"):
+                    rendered_entries.append("[listing truncated]")
+                body = "\n".join(rendered_entries) or "[empty folder]"
+                entry_count = int(output.get("entry_count", 0))
+                entry_word = "entry" if entry_count == 1 else "entries"
+                return (
+                    f"Opened folder {output.get('path')} "
+                    f"({entry_count} {entry_word}).\n{body}"
+                )
             content = str(output.get("content", ""))
             if len(content) > MAX_DISPLAY_CHARS:
                 content = content[:MAX_DISPLAY_CHARS] + "\n[display truncated]"

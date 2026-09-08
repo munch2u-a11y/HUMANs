@@ -15,7 +15,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
-DEFAULT_MODEL = "qwen3.5:0.8b"
+DEFAULT_MODEL = "qwen3.5:2b"
 DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434"
 
 
@@ -90,6 +90,16 @@ def run_checks(
             "torch",
             torch_spec is not None,
             torch_spec.origin if torch_spec and torch_spec.origin else "not installed",
+            fix="Install the cortex extra: python -m pip install -e '.[cortex]'",
+        )
+    )
+
+    numpy_spec = importlib.util.find_spec("numpy")
+    checks.append(
+        DoctorCheck(
+            "numpy",
+            numpy_spec is not None,
+            numpy_spec.origin if numpy_spec and numpy_spec.origin else "not installed",
             fix="Install the cortex extra: python -m pip install -e '.[cortex]'",
         )
     )

@@ -8,11 +8,11 @@ and open-weight speech surface as one runnable process.
 
 ## Included
 
-- persistent 18,015,141-parameter random-born cortex and hidden state;
+- persistent 18,016,166-parameter random-born cortex and hidden state;
 - evolving primitive and composite desire pressures;
 - ordinary current-event conversation through a local Ollama speech motor;
 - explicit durable `/remember` and receipt-backed `/recall`;
-- root-confined `/open` and bounded `/run` abilities;
+- root-confined `/open` folder/file inspection and bounded `/run` abilities;
 - machine-readable pulse, action, evidence, and tool receipts;
 - the conventional `habitus-rag` path as an A/B comparison;
 - full Python tests and the source for developmental/native experiments.
@@ -43,3 +43,9 @@ lineage on first launch.
   runtimes; and
 - hard-coded user homes, temporary directories, and native-library install
   prefixes have been removed from runtime defaults.
+
+The live acceptance pass also added bounded folder listing through `/open`,
+made repeated identical affordances unique across pulses, tightened explicit
+recall to exclude command/result echoes, declared NumPy as a cortex dependency,
+and selected `qwen3.5:2b` as the default speech motor after a direct local
+0.8B/2B response comparison.

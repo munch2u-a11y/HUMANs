@@ -19,7 +19,7 @@ make test
 ```
 
 `make playground` is disposable, offline, CPU-only, and uses a tiny cortex. It
-exercises conversation, explicit memory, recall, file reading, file execution,
+exercises conversation, explicit memory, recall, path inspection, file execution,
 receipts, and state persistence without Ollama or a model download.
 
 Do not enable GPU execution, download models, run native binaries, or start the
@@ -39,7 +39,7 @@ local build artifacts are absent.
 - `graph.py`, `store.py`, `pipeline.py`: graph structure, canonical SQLite
   authority, and the conserved memory substrate.
 - `tools.py`, `functional_agent.py`: receipt lifecycle and root-confined local
-  file adapters.
+  folder/file adapters.
 - `examples/api_playground.py`: smallest editable end-to-end integration.
 - `experiments/graph_native_live/`: optional research programs and ablations,
   not the default product runtime.

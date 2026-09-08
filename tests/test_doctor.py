@@ -22,6 +22,7 @@ def test_doctor_accepts_configured_model_from_local_api(monkeypatch) -> None:
     assert checks["platform"].ok is True
     assert checks["habitus-package"].ok is True
     assert checks["torch"].ok is True
+    assert checks["numpy"].ok is True
     assert checks["ollama-api"].ok is True
     assert checks["speech-model"].ok is True
 

@@ -73,16 +73,24 @@ def test_workspace_open_and_run_have_verified_receipts(tmp_path) -> None:
     note.write_text("the orchard signal is violet\n", encoding="utf-8")
     script = tmp_path / "probe.py"
     script.write_text("print('FUNCTIONAL_RUN_OK')\n", encoding="utf-8")
+    folder = tmp_path / "folder"
+    folder.mkdir()
+    (folder / "nested.txt").write_text("nested\n", encoding="utf-8")
     outside = tmp_path.parent / "outside.txt"
     outside.write_text("outside", encoding="utf-8")
 
     mind = _gestated_mind(database)
     agent = FunctionalAgent(mind, ScriptedModel(), workspace=tmp_path)
 
+    listed = agent.handle("/open folder")
     opened = agent.handle("/open note.txt")
     ran = agent.handle("/run probe.py")
     blocked = agent.handle("/open ../outside.txt")
 
+    assert listed.tool_receipt is not None
+    assert listed.tool_receipt.verified is True
+    assert listed.tool_receipt.output["kind"] == "directory"
+    assert listed.tool_receipt.output["entries"][0]["name"] == "nested.txt"
     assert opened.kind == "tool"
     assert opened.tool_receipt is not None
     assert opened.tool_receipt.verified is True
@@ -107,10 +115,10 @@ def test_workspace_open_and_run_have_verified_receipts(tmp_path) -> None:
         for record in mind.store.list_records()
         if record.record_type == RecordType.TOOL_RESULT
     ]
-    assert len(tool_calls) == 3
-    assert len(tool_returns) == 3
+    assert len(tool_calls) == 4
+    assert len(tool_returns) == 4
     assert all(mind.experience_cycle(record.metadata["experience_id"]) for record in tool_calls)
-    assert agent.state()["verified_tool_returns"] == 3
+    assert agent.state()["verified_tool_returns"] == 4
     mind.close()
 
 

@@ -90,7 +90,11 @@ def test_current_event_renderer_has_no_transcript_or_recalled_text(tmp_path: Pat
         assert "PRIVATE_FIRST_EVENT_947" not in "\n".join(
             message["content"] for message in model.calls[1]
         )
-        assert "dominant_drive=" in model.calls[1][0]["content"]
+        system_prompt = model.calls[1][0]["content"]
+        assert "private present orientation" in system_prompt
+        assert "generic AI disclaimers" in system_prompt
+        assert "numeric-state transduction" not in system_prompt
+        assert "language motor" not in system_prompt
         assert len(runtime.mind.open_experience_cycles(OutputTrunk.SPEAK)) == 1
         assert runtime.cortex.latest_pulse_state().state_sha256 != (
             first_cortex_state.state_sha256
@@ -113,6 +117,8 @@ def test_workspace_actions_require_exact_self_affordance_and_cortex_return(
     tmp_path: Path,
 ) -> None:
     (tmp_path / "note.txt").write_text("INTEGRATED_OPEN_OK\n", encoding="utf-8")
+    (tmp_path / "folder").mkdir()
+    (tmp_path / "folder" / "nested.txt").write_text("nested\n", encoding="utf-8")
     (tmp_path / "probe.py").write_text(
         "print('INTEGRATED_RUN_OK')\n", encoding="utf-8"
     )
@@ -128,6 +134,13 @@ def test_workspace_actions_require_exact_self_affordance_and_cortex_return(
         prior_recall = agent.handle("/recall tool sequence")
         assert prior_recall.tool_receipt is not None
         assert prior_recall.tool_receipt.tool_id == MEMORY_RECALL_ABILITY
+
+        listed = agent.handle("/open folder")
+        assert listed.tool_receipt is not None
+        assert listed.tool_receipt.tool_id == WORKSPACE_READ_ABILITY
+        assert listed.tool_receipt.verified is True
+        assert "Opened folder folder (1 entry)." in listed.response
+        assert "[file] nested.txt" in listed.response
 
         opened = agent.handle("/open note.txt")
         assert opened.tool_receipt is not None
@@ -209,11 +222,17 @@ def test_explicit_memory_is_pulse_selected_and_survives_restart(tmp_path: Path) 
         assert recalled.tool_receipt.tool_id == MEMORY_RECALL_ABILITY
         assert recalled.tool_receipt.verified is True
         assert "launch color is ultraviolet" in recalled.response
-        assert fact.record_id in recalled.evidence_record_ids
+        assert recalled.evidence_record_ids == (fact.record_id,)
         recall_return = runtime.mind.store.get_record(
             recalled.tool_receipt.return_record_id
         )
         assert recall_return.metadata["membrane_words"] is False
         assert recall_return.metadata["causal_trunk"] == InputTrunk.SEE.value
         assert reopened_model.calls == []
+        assert runtime.mind.graph.validate_invariants() == []
+
+        repeated = agent.handle("/recall launch color")
+        assert repeated.tool_receipt is not None
+        assert repeated.tool_receipt.verified is True
+        assert repeated.evidence_record_ids == (fact.record_id,)
         assert runtime.mind.graph.validate_invariants() == []

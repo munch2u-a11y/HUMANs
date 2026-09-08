@@ -16,7 +16,7 @@ That target runs these checks in order:
 | --- | --- | --- |
 | `make portability` | no developer home paths or machine-specific absolute code defaults | no |
 | `make docs` | every repository-relative Markdown link resolves | no |
-| `make playground` | disposable integrated conversation, memory, recall, read, run, receipts, and state | no |
+| `make playground` | disposable integrated conversation, memory, recall, folder/file inspection, run, receipts, and state | no |
 | `make test` | complete deterministic behavioral and structural pytest suite | no |
 
 Run a focused test during development with the environment interpreter:
@@ -49,6 +49,12 @@ For a live action check, put a trusted Python file in `workspace/` and run:
 .venv/bin/habitus-mind \
   --database state/acceptance.sqlite \
   --workspace workspace \
+  --once "/open ." \
+  --json
+
+.venv/bin/habitus-mind \
+  --database state/acceptance.sqlite \
+  --workspace workspace \
   --once "/run hello.py" \
   --json
 ```
@@ -67,7 +73,7 @@ The test suite checks, among other things:
 - absence of transcript and implicit recall text in the current-event renderer;
 - explicit memory commit and evidence lookup;
 - one-use output authorization and rejection of mismatched actions;
-- root confinement, file hashes, execution limits, and sensory returns;
+- root confinement, bounded folder listings, file hashes, execution limits, and sensory returns;
 - deterministic developmental curricula and controlled research ablations.
 
 These are separate evidence classes. Deterministic tests establish implemented

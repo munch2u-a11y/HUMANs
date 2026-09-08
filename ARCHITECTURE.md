@@ -240,8 +240,9 @@ and local normalization as every later edge. The preset can therefore influence
 early exploration without becoming a permanent personality command.
 
 The integrated shell uses the replaceable `ChatModel` protocol. Its Ollama
-adapter sees a fixed motor contract, the configured voice and partner names, a
-small numeric-state transduction, and only the current HEAR event. It sees no
+adapter sees a fixed first-person voice directive, the configured voice and
+partner names, a qualitative transduction of the current dominant drive and
+stability, and only the current HEAR event. It sees no
 transcript, retrieved text, `identity.md`, or skill body. Incoming and outgoing
 messages become immutable records, and the next human event settles the prior
 speech cycle. That return verifies an observed continuation, not the truth or
@@ -303,7 +304,8 @@ receipt gate.
 ## Honest boundaries
 
 The current integrated release provides conversation, persistent state, explicit
-recall, file reading, and bounded Python-file execution. Its present limits are:
+recall, root-confined folder listing and file reading, and bounded Python-file
+execution. Its present limits are:
 
 - the random-born cortex participates in state and action ranking but does not
   yet generate generally coherent open-ended speech by itself;

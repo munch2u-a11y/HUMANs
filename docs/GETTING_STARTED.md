@@ -50,7 +50,7 @@ Install and start Ollama using its platform instructions, then pull the default
 small model:
 
 ```bash
-ollama pull qwen3.5:0.8b
+ollama pull qwen3.5:2b
 make doctor
 ```
 
@@ -104,15 +104,18 @@ At the prompt, try:
 Hello. What should I call you?
 remember that my launch color is ultraviolet
 /recall launch color
+/open .
 /open hello.py
 /run hello.py
 /state
 ```
 
-`/open` accepts one UTF-8 file inside the authorized workspace. `/run` accepts
-one Python file there and applies wall-time, CPU-time, memory, output, file-size,
-and descriptor limits. Those limits are not a hostile-code sandbox: run only
-code you trust, or add an operating-system sandbox.
+`/open` accepts one folder or UTF-8 file inside the authorized workspace. A
+folder returns a bounded direct-child listing; a file returns its content and
+SHA-256. `/run` accepts one Python file there and applies wall-time, CPU-time,
+memory, output, file-size, and descriptor limits. Those limits are not a
+hostile-code sandbox: run only code you trust, or add an operating-system
+sandbox.
 
 ## 5. Give the repository to another coding agent
 

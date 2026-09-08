@@ -23,7 +23,7 @@ classifiers = [
 [project.optional-dependencies]
 test = ["pytest>=8"]
 vector-stores = ["chromadb", "pinecone-client", "psycopg[binary]", "pgvector"]
-cortex = ["torch>=2.10"]
+cortex = ["numpy>=1.26", "torch>=2.10"]
 
 [project.scripts]
 habitus-mind = "habitus_ai.integrated_agent:main"

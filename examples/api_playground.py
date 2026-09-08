@@ -113,6 +113,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "Hello from an offline integration test.",
                 "remember that the launch color is ultraviolet",
                 "/recall launch color",
+                "/open .",
                 "/open note.txt",
                 "/run probe.py",
             )
@@ -132,6 +133,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "ability:memory-commit",
                 "ability:memory-recall",
                 "ability:workspace-read",
+                "ability:workspace-read",
                 "ability:workspace-run-python",
             )
             observed_tools = tuple(
@@ -148,9 +150,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 raise RuntimeError("playground ability receipt verification failed")
             if "launch color is ultraviolet" not in turns[2].response:
                 raise RuntimeError("playground explicit recall verification failed")
-            if "playground signal is ultraviolet" not in turns[3].response.casefold():
+            if "Opened folder ." not in turns[3].response:
+                raise RuntimeError("playground workspace folder verification failed")
+            if "playground signal is ultraviolet" not in turns[4].response.casefold():
                 raise RuntimeError("playground workspace read verification failed")
-            if "PLAYGROUND_RUN_OK" not in turns[4].response:
+            if "PLAYGROUND_RUN_OK" not in turns[5].response:
                 raise RuntimeError("playground workspace run verification failed")
             if state["graph_invariant_errors"]:
                 raise RuntimeError("playground graph invariant verification failed")

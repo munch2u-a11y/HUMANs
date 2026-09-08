@@ -50,7 +50,7 @@ language model is a downstream speech renderer. A tool handler is a downstream
 actuator. Neither may invent its own authorization or bypass the returned
 sensory cycle.
 
-The default `CortexConfig` has 18,015,141 parameters. Its weights are born from
+The default `CortexConfig` has 18,016,166 parameters. Its weights are born from
 the lineage seed; its hidden state is advanced and stored on each pulse. Graph
 structure and recurrent desire state also evolve during ordinary use. Gradient
 updates are evidence-gated operations exposed by the cortex training API and
@@ -111,8 +111,8 @@ runtime admits it, advances graph/recurrent/cortex state, and ranks outputs. If
 `SPEAK` is selected, `CurrentEventSpeechRenderer` sends exactly two messages to
 the configured `ChatModel`:
 
-1. a fixed motor contract with configured names and a compact numeric-state
-   transduction;
+1. a fixed first-person voice directive with configured names and a compact
+   qualitative transduction of current dominant drive and stability;
 2. the current human event.
 
 There is no transcript window, automatic retrieval, summary, identity document,
@@ -158,7 +158,7 @@ The current CLI exposes four abilities:
 | --- | --- | --- | --- |
 | `ability:memory-commit` | `/remember` | `DO` | `NOTICE` |
 | `ability:memory-recall` | `/recall` | `LOOK` | `SEE` |
-| `ability:workspace-read` | `/open` | `LOOK` | `SEE` |
+| `ability:workspace-read` | `/open` folder listing or UTF-8 file read | `LOOK` | `SEE` |
 | `ability:workspace-run-python` | `/run` | `DO` | `NOTICE` |
 
 The command parser supplies an exact, one-turn opportunity rather than asking a

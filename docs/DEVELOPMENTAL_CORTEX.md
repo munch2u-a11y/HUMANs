@@ -55,10 +55,11 @@ file, pretrained embedding model, or GGUF. After consolidation changes the
 coordinate system, the next pulse wakes from the durable graph with a zeroed
 neural hidden state instead of replaying text through an incompatible state.
 
-The default cortex has 18,015,141 trainable parameters: byte and boundary
-receptors, a 3-layer 1024-wide GRU, and byte, route, consequence, valence, and
-motor heads. `--tiny` replaces it with a 78,893-parameter configuration for
-fast structural tests. Developmental training uses FP32 on both CPU and ROCm.
+The default cortex has 18,016,166 trainable parameters: byte and boundary
+receptors, a 3-layer 1024-wide GRU, and byte, learned-stop, route, consequence,
+valence, and motor heads. `--tiny` replaces it with a 78,958-parameter
+configuration for fast structural tests. Developmental training uses FP32 on
+both CPU and ROCm.
 The full model is small enough for that stable policy on the 16 GiB APU, and a
 non-finite loss, gradient, loaded parameter, or post-update parameter aborts
 before any plasticity receipt is written.
@@ -193,7 +194,7 @@ sudo usermod -aG render,video "$USER"
 ```
 
 An already-running shell can activate the new membership with `sg render -c`;
-a fresh login inherits it directly. The default 18,015,141-parameter FP32 probe
+a fresh login inherits it directly. The default 18,016,166-parameter FP32 probe
 passes on the Radeon 780M with a real forward/backward/Adam step, finite weights,
 and a 420 MiB peak reservation. A bounded full-size developmental run also
 passed the pulse, receipt, optimizer, checkpoint, and graph-invariant path. The

@@ -9,8 +9,9 @@
 ## Local execution boundary
 
 Habitus Mind is local-first and does not expose a network service by default.
-Its `--workspace` setting confines which file a user can select with `/open` or
-`/run`, and `/run` applies CPU-time, address-space, file-descriptor, file-size,
+Its `--workspace` setting confines which folder or file a user can select with
+`/open` and which file can be selected with `/run`. `/run` applies CPU-time,
+address-space, file-descriptor, file-size,
 wall-time, and output limits.
 
 Those controls are damage limits, not a hostile-code sandbox. An authorized

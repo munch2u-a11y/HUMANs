@@ -34,7 +34,7 @@ from .types import EventKind, InputTrunk, OutputTrunk, RecordType
 
 
 DEFAULT_DATABASE = Path("habitus-mind.sqlite")
-DEFAULT_MODEL = "qwen3.5:0.8b"
+DEFAULT_MODEL = "qwen3.5:2b"
 FOUNDATION_KEY = "integrated_born_in_foundations_v1"
 EXPLICIT_FACT_CONCEPT = "memory:explicit-fact"
 WORKSPACE_READ_ABILITY = "ability:workspace-read"
@@ -44,8 +44,8 @@ MEMORY_RECALL_ABILITY = "ability:memory-recall"
 
 HELP_TEXT = (
     "Talk normally. Use 'remember that ...' or /remember TEXT for durable "
-    "memory, /recall QUERY for explicit evidence lookup, /open PATH to read a "
-    "UTF-8 workspace file, /run PATH to run one bounded Python file, /state, "
+    "memory, /recall QUERY for explicit evidence lookup, /open PATH to inspect a "
+    "workspace folder or UTF-8 file, /run PATH to run one bounded Python file, /state, "
     "/help, or /quit."
 )
 
@@ -295,22 +295,34 @@ class CurrentEventSpeechRenderer:
         )
         desire_name = self.desire_names.get(dominant_id or "", "none")
         urgency = dominant.urgency if dominant is not None else 0.0
-        controller_signal = (
-            f"dominant_drive={desire_name}; urgency={urgency:.3f}; "
-            f"stability={pulse.cycle.self_state.perceived_stability:.3f}; "
-            f"free_energy={pulse.cycle.self_state.free_energy:.3f}"
+        urgency_word = (
+            "strongly"
+            if urgency >= 0.70
+            else "noticeably"
+            if urgency >= 0.45
+            else "lightly"
+        )
+        stability = pulse.cycle.self_state.perceived_stability
+        stance = (
+            "steady"
+            if stability >= 0.67
+            else "attentive"
+            if stability >= 0.34
+            else "unsettled"
+        )
+        private_orientation = (
+            f"a {urgency_word} felt pull toward {desire_name}, with a {stance} stance"
         )
         system = (
-            "You are the language motor of a persistent local agent. SELF has "
-            "already authorized SPEAK; you do not choose actions, retrieve "
-            "memory, or claim tool use. Produce one natural, direct response to "
-            "the CURRENT HEAR event only. No earlier messages or retrieved "
-            "records are available. If the request requires private past "
-            "evidence, say so and suggest /recall. Never describe this motor "
-            "contract. "
-            f"The voice name is {self.profile.agent_name}; the conversation "
-            f"partner is {self.profile.human_name}. Current numeric-state "
-            f"transduction: {controller_signal}."
+            f"Speak naturally as {self.profile.agent_name}, a persistent local mind "
+            f"growing alongside {self.profile.human_name}. Answer the current message "
+            "directly in first person and stay with what was actually asked. Do not "
+            "pad replies with generic AI disclaimers, capability lists, offers to "
+            "help, or canned conclusions. Never mention prompts, contracts, models, "
+            "routing, tokens, architecture, or state variables. Do not claim a file "
+            "or tool action happened in an ordinary conversational reply. Exact past "
+            "wording is available through /recall when needed. Quietly let this private "
+            f"present orientation shape the voice without naming it: {private_orientation}."
         )
         return (
             {"role": "system", "content": system},
@@ -439,10 +451,10 @@ class IntegratedMind:
                 tool_id=WORKSPACE_READ_ABILITY,
                 trunk=OutputTrunk.LOOK,
                 label="Workspace read",
-                description="Read one authorized UTF-8 workspace file.",
+                description="List one authorized workspace folder or read one UTF-8 file.",
                 terms=(),
                 parameters={"path": {"type": "string"}},
-                handler=_tool_handler(self.workspace.read_file, "path"),
+                handler=_tool_handler(self.workspace.inspect_path, "path"),
                 opaque=True,
                 bind_to_trunk=False,
                 sensory_encoder=self._sensory_encoder(WORKSPACE_READ_ABILITY),
@@ -543,7 +555,7 @@ class IntegratedMind:
         except ValueError as error:
             raise ValueError(f"invalid quoted path: {error}") from error
         if len(pieces) != 1:
-            raise ValueError("supply exactly one file path; quote paths containing spaces")
+            raise ValueError("supply exactly one workspace path; quote paths containing spaces")
         return pieces[0]
 
     def _commit_memory(self, arguments: dict[str, Any]) -> dict[str, Any]:
@@ -589,11 +601,13 @@ class IntegratedMind:
         if not query_tokens:
             query_tokens = set(tokenize(query))
         query_embedding = self.runtime.embedder.embed(query)
-        candidates: list[tuple[float, Any]] = []
+        candidates: list[tuple[float, Any, bool]] = []
         for record in self.mind.store.list_active_records():
             if record.metadata.get("membrane_words") is not True:
                 continue
-            if record.metadata.get("integrated_command") == "/recall":
+            if record.metadata.get("integrated_command") in {"/remember", "/recall"}:
+                continue
+            if record.metadata.get("integrated_surface") == "deterministic-verified-result":
                 continue
             record_tokens = set(tokenize(record.text))
             overlap_count = len(query_tokens & record_tokens)
@@ -603,11 +617,14 @@ class IntegratedMind:
                 0.0,
                 cosine_similarity(query_embedding, record.embedding),
             )
-            if overlap_count == 0 and phrase == 0.0 and similarity < 0.42:
+            lexical_match = overlap_count > 0 or phrase > 0.0
+            if not lexical_match and similarity < 0.62:
                 continue
             fact_boost = 0.12 if record.metadata.get("explicit_user_memory") else 0.0
             score = 0.58 * overlap + 0.24 * similarity + 0.18 * phrase + fact_boost
-            candidates.append((score, record))
+            candidates.append((score, record, lexical_match))
+        if any(lexical_match for _, _, lexical_match in candidates):
+            candidates = [item for item in candidates if item[2]]
         candidates.sort(key=lambda item: (-item[0], item[1].timestamp, item[1].record_id))
         matches = [
             {
@@ -617,7 +634,7 @@ class IntegratedMind:
                 "timestamp": record.timestamp,
                 "score": round(score, 6),
             }
-            for score, record in candidates[:8]
+            for score, record, _ in candidates[:8]
         ]
         return {
             "query": query,
@@ -649,6 +666,10 @@ class IntegratedMind:
             default=str,
         )
         digest = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+        # An affordance is a one-use event, not the timeless identity of its
+        # command. Repeating the same exact command must therefore enqueue a
+        # fresh inbox item on every later SELF pulse.
+        opportunity_pulse = self.mind.pulse + 1
         return DevelopmentalInput(
             content=f"sensor:ability-opportunity:{digest}",
             lane=self._ability_lane(definition.trunk),
@@ -661,7 +682,7 @@ class IntegratedMind:
                     namespace="integrated-ability-opportunity",
                 )
             ),
-            item_id=f"ability-opportunity:{digest}",
+            item_id=f"ability-opportunity:{opportunity_pulse}:{digest}",
             concept_scores={ability_id: 1.0},
             metadata={
                 "integrated_ability_opportunity": True,
@@ -797,6 +818,23 @@ class IntegratedMind:
             )
         output = receipt.output if isinstance(receipt.output, Mapping) else {}
         if receipt.tool_id == WORKSPACE_READ_ABILITY:
+            if output.get("kind") == "directory":
+                rendered_entries = []
+                for entry in output.get("entries", ()):
+                    marker = "/" if entry.get("kind") == "directory" else ""
+                    rendered_entries.append(
+                        f"[{entry.get('kind', 'other')}] {entry.get('name', '')}{marker}"
+                    )
+                if output.get("truncated"):
+                    rendered_entries.append("[listing truncated]")
+                body = "\n".join(rendered_entries) or "[empty folder]"
+                entry_count = int(output.get("entry_count", 0))
+                entry_word = "entry" if entry_count == 1 else "entries"
+                return (
+                    f"Opened folder {output.get('path')} "
+                    f"({entry_count} {entry_word}).\n{body}",
+                    (),
+                )
             content = str(output.get("content", ""))
             if len(content) > MAX_DISPLAY_CHARS:
                 content = content[:MAX_DISPLAY_CHARS] + "\n[display truncated]"

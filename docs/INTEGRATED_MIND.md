@@ -36,9 +36,9 @@ opportunities, and issues one-use authorizations in the same pulse transaction.
 The surface LLM is not that transition. It is invoked only after a selected
 `SPEAK` affordance exists. The default Ollama adapter gets:
 
-1. a fixed motor contract;
+1. a fixed first-person voice directive;
 2. the voice and partner names;
-3. a compact transduction of current drive urgency, stability, and free energy;
+3. a compact qualitative transduction of current dominant drive and stability;
 4. the current HEAR event.
 
 It receives no transcript, summary, retrieved record, `identity.md`, or
@@ -46,7 +46,7 @@ It receives no transcript, summary, retrieved record, `identity.md`, or
 `recalled_records_used=0`, and `automatic_text_retrieval=false` so this boundary
 is inspectable rather than a marketing claim.
 
-The default cortex contains 18,015,141 parameters. Its random-born weights and
+The default cortex contains 18,016,166 parameters. Its random-born weights and
 lineage are stable, and its hidden state advances and persists with each pulse.
 The graph and recurrent desire field evolve during ordinary use. Cortex gradient
 updates remain explicit, evidence-gated training operations; the interactive
@@ -100,7 +100,7 @@ every thought or sentence.
 | ordinary conversation | `SPEAK` | next human `HEAR` | current-event open-weight rendering |
 | `/remember TEXT` | `DO` | `NOTICE` | durable explicit fact |
 | `/recall QUERY` | `LOOK` | `SEE` | exact canonical evidence |
-| `/open PATH` | `LOOK` | `SEE` | root-confined UTF-8 read plus hash |
+| `/open PATH` | `LOOK` | `SEE` | root-confined folder listing or UTF-8 read plus hash |
 | `/run PATH` | `DO` | `NOTICE` | isolated, timed, resource-bounded Python run |
 
 The prior recent-turn/RAG chat path remains available as `habitus-rag` so the
@@ -111,7 +111,7 @@ architectural difference can be tested directly.
 ```bash
 make setup
 make playground
-ollama pull qwen3.5:0.8b
+ollama pull qwen3.5:2b
 make doctor
 make run HUMAN_NAME="Your name" AGENT_NAME=Mira
 ```
@@ -134,7 +134,7 @@ and does not establish.
 
 ## Honest boundary
 
-The 18,015,141-parameter cortex owns persistent numeric state and participates
+The 18,016,166-parameter cortex owns persistent numeric state and participates
 in action ranking, consequence prediction, valence, and future plasticity. A
 fresh random-born cortex does not yet produce generally coherent byte speech.
 The Ollama motor supplies fluency while receiving only current-event language.

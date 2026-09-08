@@ -23,7 +23,7 @@ Habitus graph, and changes weights only through explicitly admitted local
 training episodes.
 
 The architecture has crossed an important implementation threshold. The
-audited research environment ran the full 18,015,141-parameter cortex on a
+audited research environment ran the full 18,016,166-parameter cortex on a
 Radeon 780M, persisted neural
 state and hashed checkpoints, grow opaque concepts from three sensory trunks,
 authorize all three motor trunks, close output-first experience cycles through
@@ -262,7 +262,7 @@ The generic `ToolRegistry` has a tested kernel-backed mode that persists a tool
 cycle before calling its handler and settles success/error through the paired
 receptor. `BornInHabitusRuntime` remains reusable without a registry.
 `IntegratedMind` constructs one and installs memory commit, memory recall,
-workspace read, and bounded Python-file execution. Its explicit command adapter
+workspace folder/file inspection, and bounded Python-file execution. Its explicit command adapter
 supplies validated arguments; autonomous language-derived argument formation is
 not part of this release.
 
@@ -311,7 +311,7 @@ permutation control should be implemented.
 
 ### 3.8 Random-born recurrent cortex
 
-The default cortex contains 18,015,141 trainable parameters:
+The default cortex contains 18,016,166 trainable parameters:
 
 - 256 byte embeddings plus a boundary embedding;
 - three direction embeddings (`hear`, `speak`, and `quiet`);
@@ -421,7 +421,8 @@ forms as grounded input or compose novel multi-form responses.
 
 The product overlay takes a deliberately different final step: after this same
 pulse selects `SPEAK`, a local Ollama model renders only the current event plus a
-compact numeric-state transduction. After an exact `/remember`, `/recall`,
+compact qualitative transduction of current dominant drive and stability. After
+an exact `/remember`, `/recall`,
 `/open`, or `/run` opportunity is selected, the registered handler executes and
 its verified return passes through the same next-pulse route. This gives the
 shipped application coherent conversation and bounded useful actions while the
@@ -490,7 +491,7 @@ The strict full-model probe ran locally with PyTorch `2.12.0+rocm7.14.1`, HIP
 
 | Measurement | Result |
 |---|---:|
-| Parameters | 18,015,141 |
+| Parameters | 18,016,166 |
 | Compute dtype | FP32 |
 | Real forward/backward/Adam update | passed |
 | Loss finite | yes |
@@ -506,7 +507,7 @@ single optimization step is an integration proof, not a learning result.
 
 ### 6.3 Extended tiny-cortex nursery
 
-The 78,893-parameter FP32 nursery ran 33 pulses and produced:
+The 78,958-parameter FP32 nursery ran 33 pulses and produced:
 
 | Measurement | Result |
 |---|---:|
@@ -542,7 +543,7 @@ will become a scaling concern.
 
 ### 6.4 Receipt-backed communication nursery
 
-Three 78,893-parameter communication runs each generated three arbitrary forms
+Three 78,958-parameter communication runs each generated three arbitrary forms
 from a different seed, exposed each only beside its changing numeric referent,
 and promoted only the whole experienced utterances into bounded motor options.
 During the held-out phase the agent received `SEE` only. No expected form,
@@ -765,7 +766,8 @@ to recognized HEAR input rather than selection among complete learned forms.
 
 ### Phase 3: connect specific embodied capabilities — explicit gate passed
 
-The integrated runtime now exposes memory commit/recall and workspace read/run
+The integrated runtime now exposes memory commit/recall, folder/file inspection,
+and Python execution
 beneath exact DO and LOOK affordances. A constrained adapter owns execution,
 and success/error returns re-enter the cortex as SEE or NOTICE. The remaining
 gate is learned selection and composition across unfamiliar multi-step
